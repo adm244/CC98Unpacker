@@ -1,0 +1,59 @@
+/*
+ * ********************* ZFT File Format *********************
+ *                                                            *
+ *  Type:                                                     *
+ *    Binary                                                  *
+ *                                                            *
+ *  Description:                                              *
+ *    Stores font texture and glyths offsets                  *
+ *                                                            *
+ *  Notes:                                                    *
+ *    Sections are aligned at 4-byte boundary                 *
+ *    There's an empty section at the end of FooterSection's  *
+ *                                                            *
+ *  Header:                                                   *
+ *    HeadSignature  = "zero" (4 bytes)                       *
+ *    FileAttributes = "bl__" (4 bytes)                       *
+ *    <sections content>                                      *
+ *                                                            *
+ *  Footer:                                                   *
+ *    <FooterSections>                                        *
+ *    FooterSectionsOffset (4 bytes)                          *
+ *                                                            *
+ *  FooterSection:                                            *
+ *    Name (4 bytes, string)                                  *
+ *    Size (4 bytes)                                          *
+ *    Offset (4 bytes)                                        *
+ *                                                            *
+ *  INFO Section:                                             *
+ *    DimensionsCount (4 bytes)                               *
+ *    <Dimensions>                                            *
+ *    SizesCount (4 bytes)                                    *
+ *    <Sizes>                                                 *
+ *                                                            *
+ *  Dimensions:                                               *
+ *    Width (2 bytes)                                         *
+ *    Height (2 bytes)                                        *
+ *    <more?>                                                 *
+ *                                                            *
+ *  Sizes:                                                    *
+ *    Size (4 byte)                                           *
+ *    <more?>                                                 *
+ *                                                            *
+ *  DATA Section:                                             *
+ *    <Pixels> (8-bit palette colours)                        *
+ *                                                            *
+ *  NUMO Section:                                             *
+ *    GlythsCount (4 bytes)                                   *
+ *                                                            *
+ *  OFFS Section:                                             *
+ *    <Offsets>                                               *
+ *                                                            *
+ *  Offsets:                                                  *
+ *    XOffset (4 bytes)                                       *
+ *    YOffset (4 bytes)                                       *
+ *  NOTE: those are offsets into the texture                  *
+ *                                                            *
+ * ************************************************************
+ */
+ 
