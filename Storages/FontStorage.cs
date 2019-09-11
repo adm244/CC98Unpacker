@@ -7,21 +7,18 @@ using CropCirclesUnpacker.Extensions;
 
 namespace CropCirclesUnpacker.Storages
 {
-  public class FontStorage
+  public class FontStorage : BaseStorage
   {
     public static readonly string FolderName = "fonts";
 
-    private static readonly Int32 Signature = 0x6F72657A; // "zero"
-
-    private List<Section> Sections;
     private UInt16[] Dimensions;
     private Int32[] Sizes;
     private byte[] Pixels;
     private GlythOffset[] GlythOffsets;
 
-    private FontStorage()
+    private FontStorage(string libraryPath)
+      : base(libraryPath)
     {
-      Sections = new List<Section>(0);
       Dimensions = new UInt16[0];
       Sizes = new Int32[0];
       Pixels = new byte[0];
@@ -30,191 +27,84 @@ namespace CropCirclesUnpacker.Storages
 
     public static Font ReadFromFile(string filePath)
     {
-      FontStorage storage = ParseZFTFile(filePath);
+      FontStorage storage = new FontStorage(filePath);
+      storage.ParseFile();
 
       //TODO(adm244): convert parsed data into a Font object
 
       return null;
     }
 
-    private static FontStorage ParseZFTFile(string filePath)
+    protected override bool ParseSection(BinaryReader inputReader, SectionNames sectionName)
     {
-      FontStorage storage = new FontStorage();
+      bool result = false;
 
-      using (FileStream inputStream = new FileStream(filePath, FileMode.Open))
+      switch (sectionName)
       {
-        using (BinaryReader r = new BinaryReader(inputStream, Encoding.GetEncoding(1252)))
-        {
-          Console.WriteLine("Parsing {0}...", Path.GetFileName(filePath));
+        case SectionNames.INFO:
+          result = ParseINFOSection(inputReader);
+          break;
+        case SectionNames.DATA:
+          result = ParseDATASection(inputReader);
+          break;
+        case SectionNames.NUMO:
+          result = ParseNUMOSection(inputReader);
+          break;
+        case SectionNames.OFFS:
+          result = ParseOFFSSection(inputReader);
+          break;
 
-          if (!IsZFTFile(r))
-          {
-            Console.WriteLine("");
-            return null;
-          }
-
-          //NOTE(adm244): do we care about attributes?
-          char[] attributes = r.ReadChars(4);
-
-          ParseSectionsTable(r, storage);
-          ParseSections(r, storage);
-
-          Console.WriteLine("Done!");
-        }
+        default:
+          throw new NotImplementedException();
       }
 
-      return storage;
+      return result;
     }
 
-    private static bool IsZFTFile(BinaryReader r)
+    private bool ParseINFOSection(BinaryReader inputReader)
     {
-      Int32 signature = r.ReadInt32();
-      if (signature != Signature)
-        return false;
+      Int32 dimensionsCount = inputReader.ReadInt32();
+      Dimensions = new UInt16[dimensionsCount];
+      for (int i = 0; i < Dimensions.Length; ++i)
+      {
+        Dimensions[i] = inputReader.ReadUInt16();
+      }
+
+      Int32 sizesCount = inputReader.ReadInt32();
+      Sizes = new Int32[sizesCount];
+      for (int i = 0; i < Sizes.Length; ++i)
+      {
+        Sizes[i] = inputReader.ReadInt32();
+      }
 
       return true;
     }
 
-    private static void ParseSectionsTable(BinaryReader inputReader, FontStorage storage)
+    private bool ParseDATASection(BinaryReader inputReader)
     {
-      Int32 tableOffset = GetSectionsTableOffset(inputReader);
-      inputReader.BaseStream.Seek(tableOffset, SeekOrigin.Begin);
+      Int32 pixelsCount = (Dimensions[0] * Dimensions[1]);
+      Pixels = inputReader.ReadBytes(pixelsCount);
 
-      Console.WriteLine("\tReading sections table...");
-
-      storage.Sections = new List<Section>(4);
-      Section currentSection;
-      do
-      {
-        currentSection.Name = inputReader.ReadFixedString(4);
-        currentSection.Size = inputReader.ReadInt32();
-        currentSection.Offset = inputReader.ReadInt32();
-
-        if (!currentSection.IsNull())
-        {
-          storage.Sections.Add(currentSection);
-          Console.WriteLine("\t\tFound {0} section", currentSection.Name);
-        }
-      }
-      while (!currentSection.IsNull());
-
-      Console.WriteLine("\tDone!");
+      return true;
     }
 
-    private static Int32 GetSectionsTableOffset(BinaryReader inputReader)
-    {
-      Console.Write("\tLocating sections table...");
-
-      inputReader.BaseStream.Seek(-sizeof(Int32), SeekOrigin.End);
-      Int32 tableOffset = inputReader.ReadInt32();
-
-      Console.WriteLine(" Done!");
-
-      return tableOffset;
-    }
-
-    private static void ParseSections(BinaryReader inputReader, FontStorage storage)
-    {
-      Console.WriteLine("\tParsing sections...");
-      for (int i = 0; i < storage.Sections.Count; ++i)
-      {
-        if (storage.Sections[i].IsNull())
-        {
-          Console.WriteLine("\t\tSkipping empty section...");
-          continue;
-        }
-
-        inputReader.BaseStream.Seek(storage.Sections[i].Offset, SeekOrigin.Begin);
-
-        Console.Write("\t\tParsing {0} section...", storage.Sections[i].Name);
-        
-        Type enumType = typeof(SectionNames);
-        if (Enum.IsDefined(enumType, storage.Sections[i].Name))
-        {
-          SectionNames currentSectionName =
-            (SectionNames)Enum.Parse(enumType, storage.Sections[i].Name);
-          switch (currentSectionName)
-          {
-            case SectionNames.INFO:
-              ParseINFOSection(inputReader, storage);
-              break;
-            case SectionNames.DATA:
-              ParseDATASection(inputReader, storage);
-              break;
-            case SectionNames.NUMO:
-              ParseNUMOSection(inputReader, storage);
-              break;
-            case SectionNames.OFFS:
-              ParseOFFSSection(inputReader, storage);
-              break;
-          }
-        }
-        else
-        {
-          Console.WriteLine(" Skipped (not implemented).");
-        }
-
-        Console.WriteLine(" Done!");
-      }
-      Console.WriteLine("\tDone!");
-    }
-
-    private static void ParseINFOSection(BinaryReader inputReader, FontStorage storage)
-    {
-      Int32 dimensionsCount = inputReader.ReadInt32();
-      storage.Dimensions = new UInt16[dimensionsCount];
-      for (int i = 0; i < storage.Dimensions.Length; ++i)
-      {
-        storage.Dimensions[i] = inputReader.ReadUInt16();
-      }
-
-      Int32 sizesCount = inputReader.ReadInt32();
-      storage.Sizes = new Int32[sizesCount];
-      for (int i = 0; i < storage.Sizes.Length; ++i)
-      {
-        storage.Sizes[i] = inputReader.ReadInt32();
-      }
-    }
-
-    private static void ParseDATASection(BinaryReader inputReader, FontStorage storage)
-    {
-      Int32 pixelsCount = (storage.Dimensions[0] * storage.Dimensions[1]);
-      storage.Pixels = inputReader.ReadBytes(pixelsCount);
-    }
-
-    private static void ParseNUMOSection(BinaryReader inputReader, FontStorage storage)
+    private bool ParseNUMOSection(BinaryReader inputReader)
     {
       Int32 offsetsCount = inputReader.ReadInt32();
-      storage.GlythOffsets = new GlythOffset[offsetsCount];
+      GlythOffsets = new GlythOffset[offsetsCount];
+
+      return true;
     }
 
-    private static void ParseOFFSSection(BinaryReader inputReader, FontStorage storage)
+    private bool ParseOFFSSection(BinaryReader inputReader)
     {
-      for (int i = 0; i < storage.GlythOffsets.Length; ++i)
+      for (int i = 0; i < GlythOffsets.Length; ++i)
       {
-        storage.GlythOffsets[i].X = inputReader.ReadInt32();
-        storage.GlythOffsets[i].Y = inputReader.ReadInt32();
+        GlythOffsets[i].X = inputReader.ReadInt32();
+        GlythOffsets[i].Y = inputReader.ReadInt32();
       }
-    }
 
-    private enum SectionNames
-    {
-      INFO,
-      DATA,
-      NUMO,
-      OFFS,
-    }
-
-    private struct Section
-    {
-      public string Name;
-      public Int32 Offset;
-      public Int32 Size;
-
-      public bool IsNull()
-      {
-        return (string.IsNullOrEmpty(Name) && (Offset == 0) && (Size == 0));
-      }
+      return true;
     }
 
     private struct GlythOffset

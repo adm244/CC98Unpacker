@@ -41,6 +41,7 @@
   <ItemGroup>
     <Compile Include="Assets\Font.cs" />
     <Compile Include="Extensions\BinaryReaderExtension.cs" />
+    <Compile Include="Storages\BaseStorage.cs" />
     <Compile Include="Storages\FontStorage.cs" />
     <Compile Include="Storages\MediaStorage.cs" />
     <Compile Include="Program.cs" />
