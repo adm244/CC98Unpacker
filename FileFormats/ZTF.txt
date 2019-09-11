@@ -8,8 +8,10 @@
  *    Stores font texture and glyths offsets                  *
  *                                                            *
  *  Notes:                                                    *
- *    Sections are aligned at 4-byte boundary                 *
+ *    Sections are aligned at 4-byte boundary.                *
  *    There's an empty section at the end of FooterSection's  *
+ *      which indicates sections table parsing should stop.   *
+ *    NUMO and OFFS sections are order-dependent.             *
  *                                                            *
  *  Header:                                                   *
  *    HeadSignature  = "zero" (4 bytes)                       *
@@ -37,7 +39,7 @@
  *    <more?>                                                 *
  *                                                            *
  *  Sizes:                                                    *
- *    Size (4 byte)                                           *
+ *    DataSectionSize (4 byte)                                *
  *    <more?>                                                 *
  *                                                            *
  *  DATA Section:                                             *
