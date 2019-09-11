@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Text;
 using CropCirclesUnpacker.Extensions;
 using CropCirclesUnpacker.Utils;
-using System.Text;
 
 namespace CropCirclesUnpacker.Storages
 {

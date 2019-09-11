@@ -36,9 +36,12 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Font.cs" />
     <Compile Include="Extensions\BinaryReaderExtension.cs" />
+    <Compile Include="Storages\FontStorage.cs" />
     <Compile Include="Storages\MediaStorage.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
