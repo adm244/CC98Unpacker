@@ -79,8 +79,20 @@ namespace CropCirclesUnpacker.Storages
 
     private bool ParseDATASection(BinaryReader inputReader)
     {
-      Int32 pixelsCount = (Dimensions[0] * Dimensions[1]);
-      Pixels = inputReader.ReadBytes(pixelsCount);
+      Int32 width = Dimensions[0];
+      Int32 height = Dimensions[1];
+      Int32 size = (width * height);
+
+      Pixels = new byte[size];
+      for (int y = 0; y < height; ++y)
+      {
+        byte[] row = inputReader.ReadBytes(width);
+        row.CopyTo(Pixels, y * width);
+
+        int padding = (int)(inputReader.BaseStream.Position % 4);
+        if (padding > 0)
+          inputReader.BaseStream.Seek(4 - padding, SeekOrigin.Current);
+      }
 
       return true;
     }
