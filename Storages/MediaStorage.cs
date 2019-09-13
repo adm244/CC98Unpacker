@@ -14,7 +14,7 @@ namespace CropCirclesUnpacker.Storages
     {
     }
 
-    protected override bool ParseSection(BinaryReader inputReader, SectionNames sectionName)
+    protected override bool ParseSection(BinaryReader inputReader, Section section)
     {
       throw new NotImplementedException();
     }

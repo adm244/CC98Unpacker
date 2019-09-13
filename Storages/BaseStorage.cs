@@ -29,7 +29,7 @@ namespace CropCirclesUnpacker.Storages
       Sections = new List<Section>(0);
     }
 
-    protected abstract bool ParseSection(BinaryReader inputReader, SectionNames sectionName);
+    protected abstract bool ParseSection(BinaryReader inputReader, Section section);
 
     protected bool ParseArchive()
     {
@@ -150,12 +150,19 @@ namespace CropCirclesUnpacker.Storages
       Section currentSection;
       do
       {
-        currentSection.Name = inputReader.ReadFixedString(4);
-        currentSection.Size = inputReader.ReadInt32();
-        currentSection.Offset = inputReader.ReadInt32();
+        currentSection = new Section(SectionNames.Unknown, 0, 0);
 
-        if (!currentSection.IsNull())
+        string name = inputReader.ReadFixedString(4);
+        bool isSectionImplemented = Enum.IsDefined(typeof(SectionNames), name);
+        if (isSectionImplemented)
         {
+          SectionNames sectionName =
+            (SectionNames)Enum.Parse(typeof(SectionNames), name);
+
+          currentSection.Name = sectionName;
+          currentSection.Size = inputReader.ReadInt32();
+          currentSection.Offset = inputReader.ReadInt32();
+
           Sections.Add(currentSection);
           Console.WriteLine("\t\tFound {0} section", currentSection.Name);
         }
@@ -195,16 +202,7 @@ namespace CropCirclesUnpacker.Storages
 
         Console.Write("\t\tParsing {0} section...", Sections[i].Name);
 
-        bool isSectionImplemented = Enum.IsDefined(typeof(SectionNames), Sections[i].Name);
-        if (!isSectionImplemented)
-        {
-          Console.WriteLine(" Skipped (not implemented).");
-          continue;
-        }
-
-        SectionNames currentSectionName =
-          (SectionNames)Enum.Parse(typeof(SectionNames), Sections[i].Name);
-        if (!ParseSection(inputReader, currentSectionName))
+        if (!ParseSection(inputReader, Sections[i]))
           Console.WriteLine(" Error.");
         else
           Console.WriteLine(" Done!");
@@ -233,6 +231,7 @@ namespace CropCirclesUnpacker.Storages
 
     protected enum SectionNames
     {
+      Unknown,
       INFO,
       DATA,
       NUMO,
@@ -254,15 +253,22 @@ namespace CropCirclesUnpacker.Storages
       public string Name;
     }
 
-    private struct Section
+    protected struct Section
     {
-      public string Name;
+      public SectionNames Name;
       public Int32 Offset;
       public Int32 Size;
 
+      public Section(SectionNames name, int offset, int size)
+      {
+        Name = name;
+        Offset = offset;
+        Size = size;
+      }
+
       public bool IsNull()
       {
-        return (string.IsNullOrEmpty(Name) && (Offset == 0) && (Size == 0));
+        return ((Name == SectionNames.Unknown) && (Offset == 0) && (Size == 0));
       }
     }
   }

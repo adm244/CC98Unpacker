@@ -32,11 +32,11 @@ namespace CropCirclesUnpacker.Storages
       return null;
     }
 
-    protected override bool ParseSection(BinaryReader inputReader, SectionNames sectionName)
+    protected override bool ParseSection(BinaryReader inputReader, Section section)
     {
       bool result = false;
 
-      switch (sectionName)
+      switch (section.Name)
       {
         case SectionNames.INFO:
           result = ParseINFOSection(inputReader);
