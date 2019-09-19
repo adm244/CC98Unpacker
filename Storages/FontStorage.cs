@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Drawing.Imaging;
 using System.IO;
+using System.Runtime.InteropServices;
 using CropCirclesUnpacker.Assets;
 
 namespace CropCirclesUnpacker.Storages
@@ -8,46 +10,51 @@ namespace CropCirclesUnpacker.Storages
   {
     public static readonly string FolderName = "fonts";
 
-    private UInt16[] Dimensions;
-    private Int32[] Sizes;
-    private byte[] Pixels;
     private GlythOffset[] GlythOffsets;
 
     private FontStorage(string libraryPath)
       : base(libraryPath)
     {
-      Dimensions = new UInt16[0];
-      Sizes = new Int32[0];
-      Pixels = new byte[0];
       GlythOffsets = new GlythOffset[0];
     }
 
-    public static Font ReadFromFile(string filePath)
+    public static Font ReadFromFile(string filePath, Palette palette)
     {
       FontStorage storage = new FontStorage(filePath);
       storage.ParseFile();
 
       //TODO(adm244): convert parsed data into a Font object
+      int width = storage.Width;
+      int height = storage.Height;
+      PixelFormat format = PixelFormat.Format8bppIndexed;
+      int bytesPerPixel = 1;
+      
+      System.Drawing.Bitmap bitmap = new System.Drawing.Bitmap(width, height, format);
 
-      return null;
+      BitmapData lockData = bitmap.LockBits(new System.Drawing.Rectangle(0, 0, width, height), ImageLockMode.WriteOnly, format);
+
+      IntPtr p = lockData.Scan0;
+      for (int row = 0; row < height; ++row)
+      {
+        Marshal.Copy(storage.Pixels, row * width * bytesPerPixel, p, width * bytesPerPixel);
+        p = new IntPtr(p.ToInt64() + lockData.Stride);
+      }
+
+      bitmap.UnlockBits(lockData);
+
+      return new Font(bitmap);
     }
 
     protected override bool ParseSection(BinaryReader inputReader, Section section)
     {
       bool result = false;
 
-      switch (section.Name)
+      switch (section.Type)
       {
-        case SectionNames.INFO:
-          result = ParseINFOSection(inputReader);
-          break;
-        case SectionNames.DATA:
-          result = ParseDATASection(inputReader);
-          break;
-        case SectionNames.NUMO:
+        case SectionType.NUMO:
           result = ParseNUMOSection(inputReader);
           break;
-        case SectionNames.OFFS:
+        case SectionType.OFFS:
           result = ParseOFFSSection(inputReader);
           break;
 
@@ -56,45 +63,6 @@ namespace CropCirclesUnpacker.Storages
       }
 
       return result;
-    }
-
-    private bool ParseINFOSection(BinaryReader inputReader)
-    {
-      Int32 dimensionsCount = inputReader.ReadInt32();
-      Dimensions = new UInt16[dimensionsCount];
-      for (int i = 0; i < Dimensions.Length; ++i)
-      {
-        Dimensions[i] = inputReader.ReadUInt16();
-      }
-
-      Int32 sizesCount = inputReader.ReadInt32();
-      Sizes = new Int32[sizesCount];
-      for (int i = 0; i < Sizes.Length; ++i)
-      {
-        Sizes[i] = inputReader.ReadInt32();
-      }
-
-      return true;
-    }
-
-    private bool ParseDATASection(BinaryReader inputReader)
-    {
-      Int32 width = Dimensions[0];
-      Int32 height = Dimensions[1];
-      Int32 size = (width * height);
-
-      Pixels = new byte[size];
-      for (int y = 0; y < height; ++y)
-      {
-        byte[] row = inputReader.ReadBytes(width);
-        row.CopyTo(Pixels, y * width);
-
-        int padding = (int)(inputReader.BaseStream.Position % 4);
-        if (padding > 0)
-          inputReader.BaseStream.Seek(4 - padding, SeekOrigin.Current);
-      }
-
-      return true;
     }
 
     private bool ParseNUMOSection(BinaryReader inputReader)
@@ -109,8 +77,8 @@ namespace CropCirclesUnpacker.Storages
     {
       for (int i = 0; i < GlythOffsets.Length; ++i)
       {
-        GlythOffsets[i].X = inputReader.ReadInt32();
-        GlythOffsets[i].Y = inputReader.ReadInt32();
+        GlythOffsets[i].Left = inputReader.ReadInt32();
+        GlythOffsets[i].Right = inputReader.ReadInt32();
       }
 
       return true;
@@ -118,8 +86,8 @@ namespace CropCirclesUnpacker.Storages
 
     private struct GlythOffset
     {
-      public Int32 X;
-      public Int32 Y;
+      public Int32 Left;
+      public Int32 Right;
     }
   }
 }

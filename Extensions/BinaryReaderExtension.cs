@@ -5,6 +5,11 @@ namespace CropCirclesUnpacker.Extensions
 {
   public static class BinaryReaderExtension
   {
+    public static bool EOF(this BinaryReader reader)
+    {
+      return (reader.BaseStream.Position >= reader.BaseStream.Length);
+    }
+
     public static string ReadCString(this BinaryReader reader)
     {
       StringBuilder sb = new StringBuilder();
@@ -18,9 +23,9 @@ namespace CropCirclesUnpacker.Extensions
       return sb.ToString();
     }
 
-    public static string ReadFixedString(this BinaryReader r, int length)
+    public static string ReadFixedString(this BinaryReader reader, int length)
     {
-      char[] buffer = r.ReadChars(length);
+      char[] buffer = reader.ReadChars(length);
 
       int i;
       for (i = 0; i < buffer.Length; ++i)

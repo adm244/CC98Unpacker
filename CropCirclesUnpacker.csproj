@@ -12,6 +12,7 @@
     <AssemblyName>CropCirclesUnpacker</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -33,6 +34,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>CropCirclesUnpacker.Program</StartupObject>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -40,15 +44,20 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Font.cs" />
+    <Compile Include="Assets\Palette.cs" />
+    <Compile Include="Assets\Sprite.cs" />
     <Compile Include="Extensions\BinaryReaderExtension.cs" />
+    <Compile Include="Extensions\BinaryWriterExtension.cs" />
+    <Compile Include="Extensions\BitmapExtension.cs" />
     <Compile Include="Storages\BaseStorage.cs" />
     <Compile Include="Storages\FontStorage.cs" />
+    <Compile Include="Storages\ImageStorage.cs" />
     <Compile Include="Storages\MediaStorage.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Storages\PaletteStorage.cs" />
     <Compile Include="Utils\StringUtils.cs" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

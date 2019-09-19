@@ -8,9 +8,10 @@
  *    Stores font texture and glyths offsets                  *
  *                                                            *
  *  Notes:                                                    *
- *    Sections are aligned at 4-byte boundary.                *
+ *    Bitmap rows are aligned at 4-byte boundary (raw only).  *
  *    There's an empty section at the end of FooterSection's  *
  *      which indicates sections table parsing should stop.   *
+ *    INFO and DATA sections are order-dependent.             *
  *    NUMO and OFFS sections are order-dependent.             *
  *                                                            *
  *  Header:                                                   *
@@ -49,11 +50,11 @@
  *    GlythsCount (4 bytes)                                   *
  *                                                            *
  *  OFFS Section:                                             *
- *    <Offsets>                                               *
+ *    <GlythOffsets>                                          *
  *                                                            *
- *  Offsets:                                                  *
- *    XOffset (4 bytes)                                       *
- *    YOffset (4 bytes)                                       *
+ *  GlythOffsets:                                             *
+ *    Left (4 bytes)                                          *
+ *    Right (4 bytes)                                         *
  *  NOTE: those are offsets into the texture                  *
  *                                                            *
  * ************************************************************
