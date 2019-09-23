@@ -11,25 +11,30 @@ namespace CropCirclesUnpacker.Storages
   {
     private static readonly Int32 Signature = 0x6F72657A; // "zero"
 
-    private string LibraryPath;
+    public string LibraryPath;
     private Asset[] Assets;
+    private AssetInfo[] AssetsInfo;
     private string[] Folders;
     private string[] FileExtensions;
 
     private Encoding Encoding = Encoding.GetEncoding(1252);
 
+    public Asset[] Contents
+    {
+      get { return Assets; }
+    }
+
     private MediaStorage(string libraryPath)
     {
       LibraryPath = libraryPath;
       Assets = new Asset[0];
+      AssetsInfo = new AssetInfo[0];
       Folders = new string[0];
       FileExtensions = new string[0];
     }
 
     private bool ParseArchive()
     {
-      bool result = false;
-
       using (FileStream inputStream = new FileStream(LibraryPath, FileMode.Open))
       {
         using (BinaryReader inputReader = new BinaryReader(inputStream, Encoding))
@@ -48,15 +53,17 @@ namespace CropCirclesUnpacker.Storages
           // The rest characters are set to '_' and are ignored.
           char[] attributes = inputReader.ReadChars(4);
 
-          result = ParseAssetsTable(inputReader);
+          AssetsInfo = ParseAssetsTable(inputReader);
           Folders = ParseStrings(inputReader);
           FileExtensions = ParseStrings(inputReader);
+
+          PrepareAssets();
 
           Console.WriteLine("Done!");
         }
       }
 
-      return result;
+      return true;
     }
 
     private bool IsValidFile(BinaryReader inputReader)
@@ -68,28 +75,28 @@ namespace CropCirclesUnpacker.Storages
       return true;
     }
 
-    private bool ParseAssetsTable(BinaryReader inputReader)
+    private AssetInfo[] ParseAssetsTable(BinaryReader inputReader)
     {
       FilesTableInfo tableInfo = GetFilesTableInfo(inputReader);
       inputReader.BaseStream.Seek(tableInfo.Offset, SeekOrigin.Begin);
 
       Console.WriteLine("\tReading assets table...");
 
-      Assets = new Asset[tableInfo.Count];
-      for (int i = 0; i < Assets.Length; ++i)
+      AssetInfo[] assetsInfo = new AssetInfo[tableInfo.Count];
+      for (int i = 0; i < assetsInfo.Length; ++i)
       {
-        Assets[i].FolderIndex = inputReader.ReadInt16();
-        Assets[i].ExtensionIndex = inputReader.ReadInt16();
-        Assets[i].Offset = inputReader.ReadInt32();
-        Assets[i].Size = inputReader.ReadInt32();
-        Assets[i].Name = inputReader.ReadCString();
+        assetsInfo[i].FolderIndex = inputReader.ReadInt16();
+        assetsInfo[i].ExtensionIndex = inputReader.ReadInt16();
+        assetsInfo[i].Offset = inputReader.ReadInt32();
+        assetsInfo[i].Size = inputReader.ReadInt32();
+        assetsInfo[i].Name = inputReader.ReadCString();
 
-        Console.WriteLine("\t\tFound {0} asset", Assets[i].Name);
+        Console.WriteLine("\t\tFound {0} asset", assetsInfo[i].Name);
       }
 
       Console.WriteLine("\tDone!");
 
-      return true;
+      return assetsInfo;
     }
 
     private FilesTableInfo GetFilesTableInfo(BinaryReader inputReader)
@@ -124,6 +131,18 @@ namespace CropCirclesUnpacker.Storages
       return names;
     }
 
+    private void PrepareAssets()
+    {
+      Assets = new Asset[AssetsInfo.Length];
+      for (int i = 0; i < Assets.Length; ++i)
+      {
+        Assets[i].FileName = AssetsInfo[i].Name;
+        Assets[i].Folder = Folders[AssetsInfo[i].FolderIndex];
+        Assets[i].Extension = FileExtensions[AssetsInfo[i].ExtensionIndex];
+        Assets[i].FullFileName = Assets[i].FileName + Assets[i].Extension;
+      }
+    }
+
     public static MediaStorage ReadFromFile(string filePath)
     {
       MediaStorage mediaFile = new MediaStorage(filePath);
@@ -144,9 +163,9 @@ namespace CropCirclesUnpacker.Storages
         {
           for (int i = 0; i < Assets.Length; ++i)
           {
-            string fileFolder = Folders[Assets[i].FolderIndex];
-            string fileExtension = FileExtensions[Assets[i].ExtensionIndex];
-            string fileFullName = Assets[i].Name + fileExtension;
+            string fileFolder = Folders[AssetsInfo[i].FolderIndex];
+            string fileExtension = FileExtensions[AssetsInfo[i].ExtensionIndex];
+            string fileFullName = AssetsInfo[i].Name + fileExtension;
 
             string folderPath = Path.Combine(targetFolder, fileFolder);
             Directory.CreateDirectory(folderPath);
@@ -156,16 +175,16 @@ namespace CropCirclesUnpacker.Storages
             {
               using (BinaryWriter outputWriter = new BinaryWriter(outputStream, Encoding.GetEncoding(1252)))
               {
-                inputReader.BaseStream.Seek(Assets[i].Offset, SeekOrigin.Begin);
+                inputReader.BaseStream.Seek(AssetsInfo[i].Offset, SeekOrigin.Begin);
 
                 Console.Write("\tExtracting {0}...", fileFullName);
 
                 // 1048576 bytes = 1 mb
                 byte[] buffer = new byte[1048576];
                 long bytesRead = 0;
-                while (bytesRead < Assets[i].Size)
+                while (bytesRead < AssetsInfo[i].Size)
                 {
-                  long bytesLeftToRead = Assets[i].Size - bytesRead;
+                  long bytesLeftToRead = AssetsInfo[i].Size - bytesRead;
                   long bytesToRead = Math.Min(buffer.Length, bytesLeftToRead);
 
                   // make sure buffer length is within 32-bit boundary
@@ -193,13 +212,22 @@ namespace CropCirclesUnpacker.Storages
       public Int32 Count;
     }
 
-    private struct Asset
+    private struct AssetInfo
     {
       public Int16 FolderIndex;
       public Int16 ExtensionIndex;
       public Int32 Offset;
       public Int32 Size;
       public string Name;
+    }
+    
+    //TODO(adm244): private set
+    public struct Asset
+    {
+      public string Folder;
+      public string FileName;
+      public string Extension;
+      public string FullFileName;
     }
   }
 }

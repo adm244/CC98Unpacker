@@ -2,7 +2,7 @@
 using System.Drawing.Imaging;
 using System.IO;
 using CropCirclesUnpacker.Assets;
-using CropCirclesUnpacker.Storages;
+using CropCirclesUnpacker.Storages.Resources;
 
 namespace CropCirclesUnpacker
 {
@@ -58,8 +58,8 @@ namespace CropCirclesUnpacker
           continue;
 
         Sprite sprite = ImageStorage.ReadFromFile(sprites[i], palette);
-        Bitmap bitmap = sprite.CreateBitmap(palette);
-        bitmap.Save(string.Format("{0}.bmp", Path.GetFileNameWithoutExtension(sprites[i])), ImageFormat.Bmp);
+        /*Bitmap bitmap = sprite.CreateBitmap(palette);
+        bitmap.Save(string.Format("{0}.bmp", Path.GetFileNameWithoutExtension(sprites[i])), ImageFormat.Bmp);*/
       }
     }
   }

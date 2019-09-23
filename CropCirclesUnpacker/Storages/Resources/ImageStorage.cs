@@ -3,7 +3,7 @@ using System.IO;
 using CropCirclesUnpacker.Assets;
 using CropCirclesUnpacker.Extensions;
 
-namespace CropCirclesUnpacker.Storages
+namespace CropCirclesUnpacker.Storages.Resources
 {
   public class ImageStorage : ResourceStorage
   {

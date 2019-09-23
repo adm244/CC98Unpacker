@@ -5,7 +5,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using CropCirclesUnpacker.Assets;
 
-namespace CropCirclesUnpacker.Storages
+namespace CropCirclesUnpacker.Storages.Resources
 {
   public class FontStorage : ResourceStorage
   {

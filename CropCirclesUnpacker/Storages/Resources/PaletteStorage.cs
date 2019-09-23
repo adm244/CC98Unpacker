@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using CropCirclesUnpacker.Assets;
 
-namespace CropCirclesUnpacker.Storages
+namespace CropCirclesUnpacker.Storages.Resources
 {
   public class PaletteStorage : ResourceStorage
   {
