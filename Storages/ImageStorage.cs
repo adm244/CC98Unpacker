@@ -1,16 +1,20 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO;
 using CropCirclesUnpacker.Assets;
 using CropCirclesUnpacker.Extensions;
 
 namespace CropCirclesUnpacker.Storages
 {
-  public class ImageStorage : BaseStorage
+  public class ImageStorage : ResourceStorage
   {
+    private byte[] OFFI;
+    private byte[] OFFS;
+
     private ImageStorage(string libraryPath)
       : base(libraryPath)
     {
+      OFFI = new byte[0];
+      OFFS = new byte[0];
     }
 
     public static Sprite ReadFromFile(string filePath, Palette palette)
@@ -66,27 +70,30 @@ namespace CropCirclesUnpacker.Storages
       switch (section.Type)
       {
         case SectionType.OFFS:
-          result = ParseOFFSSection(inputReader);
+          result = ParseOFFSSection(inputReader, section);
           break;
         case SectionType.OFFI:
-          result = ParseOFFISection(inputReader);
+          result = ParseOFFISection(inputReader, section);
+          break;
+
+        default:
+          Debug.Assert(false, "Section is not implemented");
           break;
       }
 
       return result;
     }
 
-    private bool ParseOFFSSection(BinaryReader inputReader)
+    private bool ParseOFFSSection(BinaryReader inputReader, Section section)
     {
-      //TODO(adm244): read 8 bytes of each offset
-      return false;
+      OFFS = inputReader.ReadBytes(section.Size);
+
+      return true;
     }
 
-    private bool ParseOFFISection(BinaryReader inputReader)
+    private bool ParseOFFISection(BinaryReader inputReader, Section section)
     {
-      // Initial clip?
-      UInt16 left = inputReader.ReadUInt16();
-      UInt16 right = inputReader.ReadUInt16();
+      OFFI = inputReader.ReadBytes(section.Size);
 
       return true;
     }

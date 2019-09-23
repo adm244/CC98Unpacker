@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using CropCirclesUnpacker.Assets;
 
 namespace CropCirclesUnpacker.Storages
 {
-  public class PaletteStorage : BaseStorage
+  public class PaletteStorage : ResourceStorage
   {
     private Int32[] Colours;
     private byte[] Lookups;
@@ -36,6 +37,10 @@ namespace CropCirclesUnpacker.Storages
           break;
         case SectionType.LKUP:
           result = ParseLKUPSection(inputReader, section.Size);
+          break;
+
+        default:
+          Debug.Assert(false, "Section is not implemented");
           break;
       }
 

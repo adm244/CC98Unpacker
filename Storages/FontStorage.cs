@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -6,10 +7,8 @@ using CropCirclesUnpacker.Assets;
 
 namespace CropCirclesUnpacker.Storages
 {
-  public class FontStorage : BaseStorage
+  public class FontStorage : ResourceStorage
   {
-    public static readonly string FolderName = "fonts";
-
     private GlythOffset[] GlythOffsets;
 
     private FontStorage(string libraryPath)
@@ -59,7 +58,8 @@ namespace CropCirclesUnpacker.Storages
           break;
 
         default:
-          throw new NotImplementedException();
+          Debug.Assert(false, "Section is not implemented");
+          break;
       }
 
       return result;
