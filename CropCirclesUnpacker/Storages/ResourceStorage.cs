@@ -21,6 +21,11 @@ namespace CropCirclesUnpacker.Storages
 
     private Encoding Encoding = Encoding.GetEncoding(1252);
 
+    protected ResourceStorage()
+      : this(string.Empty)
+    {
+    }
+
     protected ResourceStorage(string filePath)
     {
       LibraryPath = filePath;
@@ -42,23 +47,32 @@ namespace CropCirclesUnpacker.Storages
       {
         using (BinaryReader inputReader = new BinaryReader(inputStream, Encoding))
         {
-          Console.WriteLine("Parsing {0}...", Path.GetFileName(LibraryPath));
-
-          if (!IsValidFile(inputReader))
-          {
-            Console.WriteLine("Failed. Invalid or corrupt file detected!");
-            return false;
-          }
-
-          //NOTE(adm244): do we care about attributes?
-          char[] attributes = inputReader.ReadChars(4);
-
-          result = ParseSectionsTable(inputReader);
-          result = ParseSections(inputReader);
-
-          Console.WriteLine("Done!");
+          result = ParseFile(inputReader);
         }
       }
+
+      return result;
+    }
+
+    protected bool ParseFile(BinaryReader inputReader)
+    {
+      bool result = false;
+
+      Console.WriteLine("Parsing {0}...", Path.GetFileName(LibraryPath));
+
+      if (!IsValidFile(inputReader))
+      {
+        Console.WriteLine("Failed. Invalid or corrupt file detected!");
+        return false;
+      }
+
+      //NOTE(adm244): do we care about attributes?
+      char[] attributes = inputReader.ReadChars(4);
+
+      result = ParseSectionsTable(inputReader);
+      result = ParseSections(inputReader);
+
+      Console.WriteLine("Done!");
 
       return result;
     }

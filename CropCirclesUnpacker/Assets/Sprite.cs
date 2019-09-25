@@ -10,13 +10,15 @@ namespace CropCirclesUnpacker.Assets
     private PixelFormat Format = PixelFormat.Format8bppIndexed;
     private byte[] Pixels;
 
-    public Sprite(byte[] pixels, int width, int height)
+    public Sprite(string name, byte[] pixels, int width, int height, bool isBackground)
     {
       Debug.Assert((width > 0) && (height > 0));
       Debug.Assert((width * height) == pixels.Length);
 
+      Name = name;
       Width = width;
       Height = height;
+      Background = isBackground;
 
       Pixels = new byte[pixels.Length];
       pixels.CopyTo(Pixels, 0);
@@ -31,6 +33,17 @@ namespace CropCirclesUnpacker.Assets
       return bitmap;
     }
 
+    public override string ToString()
+    {
+      return Name;
+    }
+
+    public string Name
+    {
+      get;
+      private set;
+    }
+
     public int Width
     {
       get;
@@ -38,6 +51,12 @@ namespace CropCirclesUnpacker.Assets
     }
 
     public int Height
+    {
+      get;
+      private set;
+    }
+
+    public bool Background
     {
       get;
       private set;

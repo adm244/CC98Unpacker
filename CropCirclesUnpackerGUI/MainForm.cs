@@ -3,20 +3,28 @@ using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
 using CropCirclesUnpacker.Storages;
+using CropCirclesUnpacker.Storages.Resources;
+using CropCirclesUnpacker.Assets;
 
 namespace CropCirclesUnpackerGUI
 {
   public partial class MainForm : Form
   {
     private List<MediaStorage> Archives;
+    private List<Palette> Palettes;
 
     public MainForm()
     {
       InitializeComponent();
 
       Archives = new List<MediaStorage>();
+      Palettes = new List<Palette>();
+      
       clearArchivesToolStripMenuItem.Enabled = false;
       extractToToolStripMenuItem.Enabled = false;
+      btnImport.Enabled = false;
+      btnExport.Enabled = false;
+      ctrlPaletteSelector.Enabled = false;
 
       Console.SetOut(TextWriter.Null);
     }
@@ -30,23 +38,43 @@ namespace CropCirclesUnpackerGUI
 
       if (ctrlOpenFile.ShowDialog() == DialogResult.OK)
       {
-        ctrlStatusLabel.Text = "Loading...";
+        LoadArchives(ctrlOpenFile.FileNames);
+      }
+    }
 
-        //TODO(adm244): put into a separate thread
-        string[] files = ctrlOpenFile.FileNames;
-        for (int i = 0; i < files.Length; ++i)
-        {
-          MediaStorage storage = MediaStorage.ReadFromFile(files[i]);
-          if (storage != null)
-            Archives.Add(storage);
-        }
+    private void LoadArchives(string[] files)
+    {
+      ctrlStatusLabel.Text = "Loading...";
 
-        ctrlStatusLabel.Text = string.Format("{0} archives loaded.", Archives.Count);
+      //TODO(adm244): put into a separate thread
+      for (int i = 0; i < files.Length; ++i)
+      {
+        MediaStorage storage = MediaStorage.ReadFromFile(files[i]);
+        if (storage != null)
+          Archives.Add(storage);
+      }
 
-        if (Archives.Count > 0)
-          clearArchivesToolStripMenuItem.Enabled = true;
+      ctrlStatusLabel.Text = string.Format("{0} archives loaded.", Archives.Count);
 
-        FillTreeView();
+      if (Archives.Count > 0)
+        clearArchivesToolStripMenuItem.Enabled = true;
+
+      FillTreeView();
+      FillPaletteSelector();
+    }
+
+    private void FillPaletteSelector()
+    {
+      ctrlPaletteSelector.Items.Clear();
+      for (int i = 0; i < Archives.Count; ++i)
+      {
+        ctrlPaletteSelector.Items.AddRange(Archives[i].Palettes.ToArray());
+      }
+
+      if (ctrlPaletteSelector.Items.Count > 0)
+      {
+        ctrlPaletteSelector.SelectedIndex = 0;
+        ctrlPaletteSelector.Enabled = true;
       }
     }
 
@@ -103,7 +131,12 @@ namespace CropCirclesUnpackerGUI
     {
       Archives.Clear();
       ctrlTreeView.Nodes.Clear();
+      
       clearArchivesToolStripMenuItem.Enabled = false;
+      
+      ctrlPaletteSelector.Items.Clear();
+      ctrlPaletteSelector.Enabled = false;
+
       ctrlStatusLabel.Text = "Cleared.";
     }
 

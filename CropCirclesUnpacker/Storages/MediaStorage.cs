@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+using CropCirclesUnpacker.Assets;
 using CropCirclesUnpacker.Extensions;
+using CropCirclesUnpacker.Storages.Resources;
 using CropCirclesUnpacker.Utils;
 
 namespace CropCirclesUnpacker.Storages
@@ -19,6 +22,12 @@ namespace CropCirclesUnpacker.Storages
 
     private Encoding Encoding = Encoding.GetEncoding(1252);
 
+    public List<Palette> Palettes;
+    public List<Font> Fonts;
+    public List<Sprite> Sprites;
+    //public List<Model> Models;
+    //public List<string> Texts;
+
     public Asset[] Contents
     {
       get { return Assets; }
@@ -31,6 +40,12 @@ namespace CropCirclesUnpacker.Storages
       AssetsInfo = new AssetInfo[0];
       Folders = new string[0];
       FileExtensions = new string[0];
+
+      Palettes = new List<Palette>();
+      Fonts = new List<Font>();
+      Sprites = new List<Sprite>();
+      //Models = new List<Model>();
+      //Texts = new List<string>();
     }
 
     private bool ParseArchive()
@@ -152,14 +167,81 @@ namespace CropCirclesUnpacker.Storages
         return null;
       }
 
+      int filesCount = mediaFile.LoadContents();
+      if (filesCount < 1)
+        Debug.Assert(false, "Could not load archive contents");
+
       return mediaFile;
+    }
+
+    private int LoadContents()
+    {
+      using (FileStream inputStream = new FileStream(LibraryPath, FileMode.Open))
+      {
+        using (BinaryReader inputReader = new BinaryReader(inputStream, Encoding))
+        {
+          for (int i = 0; i < AssetsInfo.Length; ++i)
+          {
+            inputReader.BaseStream.Seek(AssetsInfo[i].Offset, SeekOrigin.Begin);
+
+            byte[] buffer = inputReader.ReadBytes(AssetsInfo[i].Size);
+            if (buffer.Length != AssetsInfo[i].Size)
+            {
+              Debug.Assert(false, "Possible data corruption");
+              continue;
+            }
+
+            MemoryStream memoryStream = new MemoryStream(buffer);
+            BinaryReader resourceStream = new BinaryReader(memoryStream, Encoding);
+
+            string extension = FileExtensions[AssetsInfo[i].ExtensionIndex];
+            switch (extension)
+            {
+              case ".clr":
+                {
+                  Palette palette = PaletteStorage.ReadFromStream(resourceStream, AssetsInfo[i].Name);
+                  if (palette == null)
+                    Debug.Assert(false, "Could not read a palette data from a stream");
+                  else
+                    Palettes.Add(palette);
+                }
+                break;
+
+              case ".zim":
+                {
+                  Sprite sprite = ImageStorage.ReadFromStream(resourceStream, AssetsInfo[i].Name);
+                  if (sprite == null)
+                    Debug.Assert(false, "Could not read a sprite data from a stream");
+                  else
+                    Sprites.Add(sprite);
+                }
+                break;
+              case ".zft":
+                {
+                  Font font = FontStorage.ReadFromStream(resourceStream, AssetsInfo[i].Name);
+                  if (font == null)
+                    Debug.Assert(false, "Could not read a font data from a stream");
+                  else
+                    Fonts.Add(font);
+                }
+                break;
+
+              default:
+                //Debug.Assert(false, "Not implemented file extension");
+                break;
+            }
+          }
+        }
+      }
+
+      return (Palettes.Count + Sprites.Count + Fonts.Count);
     }
 
     public void ExtractTo(string targetFolder)
     {
       using (FileStream inputStream = new FileStream(LibraryPath, FileMode.Open))
       {
-        using (BinaryReader inputReader = new BinaryReader(inputStream))
+        using (BinaryReader inputReader = new BinaryReader(inputStream, Encoding))
         {
           for (int i = 0; i < Assets.Length; ++i)
           {

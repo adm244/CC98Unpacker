@@ -8,8 +8,9 @@ namespace CropCirclesUnpacker.Assets
     public Color[] Entries;
     public byte[] Lookups;
 
-    public Palette(int[] entries, byte[] lookups)
+    public Palette(string name, int[] entries, byte[] lookups)
     {
+      Name = name;
       SetEntries(entries);
 
       Lookups = new byte[lookups.Length];
@@ -30,6 +31,17 @@ namespace CropCirclesUnpacker.Assets
 
         Entries[i] = Color.FromArgb(alpha, red, green, blue);
       }
+    }
+
+    public override string ToString()
+    {
+      return Name;
+    }
+
+    public string Name
+    {
+      get;
+      private set;
     }
   }
 }

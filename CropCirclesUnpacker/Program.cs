@@ -57,7 +57,7 @@ namespace CropCirclesUnpacker
         if (Path.GetExtension(sprites[i]) != ".zim")
           continue;
 
-        Sprite sprite = ImageStorage.ReadFromFile(sprites[i], palette);
+        Sprite sprite = ImageStorage.ReadFromFile(sprites[i]);
         /*Bitmap bitmap = sprite.CreateBitmap(palette);
         bitmap.Save(string.Format("{0}.bmp", Path.GetFileNameWithoutExtension(sprites[i])), ImageFormat.Bmp);*/
       }

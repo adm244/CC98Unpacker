@@ -10,6 +10,11 @@ namespace CropCirclesUnpacker.Storages.Resources
     private byte[] OFFI;
     private byte[] OFFS;
 
+    private ImageStorage()
+      : base()
+    {
+    }
+
     private ImageStorage(string libraryPath)
       : base(libraryPath)
     {
@@ -17,18 +22,39 @@ namespace CropCirclesUnpacker.Storages.Resources
       OFFS = new byte[0];
     }
 
-    public static Sprite ReadFromFile(string filePath, Palette palette)
+    public static Sprite ReadFromStream(BinaryReader inputReader, string name)
     {
-      ImageStorage storage = new ImageStorage(filePath);
-      storage.ParseFile();
+      ImageStorage storage = new ImageStorage();
+      if (!storage.ParseFile(inputReader))
+        return null;
 
+      bool isBackground = true;
       byte[] pixels = storage.Pixels;
       if (storage.Type == ResourceType.Sprite)
       {
+        isBackground = false;
         pixels = storage.Decompress();
       }
 
-      return new Sprite(pixels, storage.Width, storage.Height);
+      return new Sprite(name, pixels, storage.Width, storage.Height, isBackground);
+    }
+
+    public static Sprite ReadFromFile(string filePath)
+    {
+      ImageStorage storage = new ImageStorage(filePath);
+      if (!storage.ParseFile())
+        return null;
+
+      bool isBackground = true;
+      byte[] pixels = storage.Pixels;
+      if (storage.Type == ResourceType.Sprite)
+      {
+        isBackground = false;
+        pixels = storage.Decompress();
+      }
+
+      string name = Path.GetFileNameWithoutExtension(filePath);
+      return new Sprite(name, pixels, storage.Width, storage.Height, isBackground);
     }
 
     private byte[] Decompress()

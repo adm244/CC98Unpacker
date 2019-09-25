@@ -10,6 +10,11 @@ namespace CropCirclesUnpacker.Storages.Resources
     private Int32[] Colours;
     private byte[] Lookups;
 
+    private PaletteStorage()
+      : base()
+    {
+    }
+
     private PaletteStorage(string libraryPath)
       : base(libraryPath)
     {
@@ -17,13 +22,23 @@ namespace CropCirclesUnpacker.Storages.Resources
       Lookups = new byte[0];
     }
 
+    public static Palette ReadFromStream(BinaryReader inputReader, string name)
+    {
+      PaletteStorage storage = new PaletteStorage();
+      if (!storage.ParseFile(inputReader))
+        return null;
+
+      return new Palette(name, storage.Colours, storage.Lookups);
+    }
+
     public static Palette ReadFromFile(string filePath)
     {
       PaletteStorage storage = new PaletteStorage(filePath);
-      storage.ParseFile();
+      if (!storage.ParseFile())
+        return null;
 
-      Palette palette = new Palette(storage.Colours, storage.Lookups);
-      return palette;
+      string name = Path.GetFileNameWithoutExtension(filePath);
+      return new Palette(name, storage.Colours, storage.Lookups);
     }
 
     protected override bool ParseSection(BinaryReader inputReader, Section section)
