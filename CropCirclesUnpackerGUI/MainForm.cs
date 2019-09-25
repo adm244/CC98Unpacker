@@ -5,6 +5,8 @@ using System.Windows.Forms;
 using CropCirclesUnpacker.Storages;
 using CropCirclesUnpacker.Storages.Resources;
 using CropCirclesUnpacker.Assets;
+using System.Diagnostics;
+using System.Drawing;
 
 namespace CropCirclesUnpackerGUI
 {
@@ -68,7 +70,8 @@ namespace CropCirclesUnpackerGUI
       ctrlPaletteSelector.Items.Clear();
       for (int i = 0; i < Archives.Count; ++i)
       {
-        ctrlPaletteSelector.Items.AddRange(Archives[i].Palettes.ToArray());
+        Asset[] palettes = Archives[i].GetAssets(Asset.AssetType.Palette);
+        ctrlPaletteSelector.Items.AddRange(palettes);
       }
 
       if (ctrlPaletteSelector.Items.Count > 0)
@@ -86,11 +89,20 @@ namespace CropCirclesUnpackerGUI
         string archiveName = Path.GetFileNameWithoutExtension(Archives[archiveIndex].LibraryPath);
         TreeNode archiveNode = new TreeNode(archiveName);
 
-        MediaStorage.Asset[] assets = Archives[archiveIndex].Contents;
+        MediaStorage.AssetInfo[] assets = Archives[archiveIndex].AssetsInfo;
         for (int i = 0; i < assets.Length; ++i)
         {
           TreeNode folderNode = CreateFolderNode(archiveNode, assets[i].Folder);
-          folderNode.Nodes.Add(assets[i].FullFileName);
+          TreeNode fileNode = folderNode.Nodes.Add(assets[i].FullFileName);
+
+          Asset asset = Archives[archiveIndex].GetAsset(assets[i].Name);
+          if (asset == null)
+          {
+            //Debug.Assert(false, "Cannot find an asset");
+            continue;
+          }
+
+          fileNode.Tag = asset;
         }
 
         ctrlTreeView.Nodes.Add(archiveNode);
@@ -137,12 +149,83 @@ namespace CropCirclesUnpackerGUI
       ctrlPaletteSelector.Items.Clear();
       ctrlPaletteSelector.Enabled = false;
 
+      ctrlContentPanel.Controls.Clear();
+
+      btnImport.Enabled = false;
+      btnExport.Enabled = false;
+
       ctrlStatusLabel.Text = "Cleared.";
     }
 
     private void closeToolStripMenuItem_Click(object sender, EventArgs e)
     {
       Application.Exit();
+    }
+
+    private void ctrlTreeView_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
+    {
+      if (!(e.Node.Tag is Asset))
+      {
+        Debug.Assert(false, "TreeNode is not associated with an Asset");
+        return;
+      }
+
+      Asset asset = (Asset)e.Node.Tag;
+      switch (asset.Type)
+      {
+        case Asset.AssetType.Sprite:
+          DisplaySprite((Sprite)asset);
+          break;
+
+        default:
+          Debug.Assert(false, "Asset type not implemented");
+          break;
+      }
+    }
+
+    private Palette GetSelectedPalette()
+    {
+      if ((ctrlPaletteSelector.Items.Count < 1) || (ctrlPaletteSelector.SelectedItem == null))
+      {
+        Debug.Assert(false, "No palettes to select from");
+        return null;
+      }
+
+      if (!(ctrlPaletteSelector.SelectedItem is Palette))
+      {
+        Debug.Assert(false, "Selected palette is not implementing a Palette class");
+        return null;
+      }
+
+      return (Palette)ctrlPaletteSelector.SelectedItem;
+    }
+
+    private void DisplaySprite(Sprite sprite)
+    {
+      Palette palette = GetSelectedPalette();
+      Image image = sprite.CreateBitmap(palette);
+
+      PictureBox pictureBox = new PictureBox();
+      pictureBox.Dock = DockStyle.None;
+      pictureBox.SizeMode = PictureBoxSizeMode.AutoSize;
+
+      ctrlContentPanel.Controls.Clear();
+      ctrlContentPanel.Controls.Add(pictureBox);
+
+      btnImport.Enabled = true;
+      btnExport.Enabled = true;
+
+      pictureBox.Image = image;
+    }
+
+    private void btnImport_Click(object sender, EventArgs e)
+    {
+      // load the content for whatever is currently displayed
+    }
+
+    private void btnExport_Click(object sender, EventArgs e)
+    {
+      // save the content of whatever is currently displayed
     }
   }
 }

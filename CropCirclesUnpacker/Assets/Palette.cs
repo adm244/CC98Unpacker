@@ -3,14 +3,14 @@ using System.Drawing;
 
 namespace CropCirclesUnpacker.Assets
 {
-  public class Palette
+  public class Palette : Asset
   {
     public Color[] Entries;
     public byte[] Lookups;
 
     public Palette(string name, int[] entries, byte[] lookups)
+      : base(name, AssetType.Palette)
     {
-      Name = name;
       SetEntries(entries);
 
       Lookups = new byte[lookups.Length];
@@ -24,24 +24,13 @@ namespace CropCirclesUnpacker.Assets
       {
         int value = entries[i];
 
-        int alpha = 0;
+        int alpha = 255;
         int red = (value & 0xFF);
         int green = ((value >> 8) & 0xFF);
         int blue = ((value >> 16) & 0xFF);
 
         Entries[i] = Color.FromArgb(alpha, red, green, blue);
       }
-    }
-
-    public override string ToString()
-    {
-      return Name;
-    }
-
-    public string Name
-    {
-      get;
-      private set;
     }
   }
 }

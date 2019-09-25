@@ -15,37 +15,21 @@ namespace CropCirclesUnpacker.Storages
     private static readonly Int32 Signature = 0x6F72657A; // "zero"
 
     public string LibraryPath;
-    private Asset[] Assets;
-    private AssetInfo[] AssetsInfo;
-    private string[] Folders;
-    private string[] FileExtensions;
+    private List<Asset> Assets;
 
     private Encoding Encoding = Encoding.GetEncoding(1252);
-
-    public List<Palette> Palettes;
-    public List<Font> Fonts;
-    public List<Sprite> Sprites;
-    //public List<Model> Models;
-    //public List<string> Texts;
-
-    public Asset[] Contents
-    {
-      get { return Assets; }
-    }
 
     private MediaStorage(string libraryPath)
     {
       LibraryPath = libraryPath;
-      Assets = new Asset[0];
+      Assets = new List<Asset>();
       AssetsInfo = new AssetInfo[0];
-      Folders = new string[0];
-      FileExtensions = new string[0];
+    }
 
-      Palettes = new List<Palette>();
-      Fonts = new List<Font>();
-      Sprites = new List<Sprite>();
-      //Models = new List<Model>();
-      //Texts = new List<string>();
+    public AssetInfo[] AssetsInfo
+    {
+      get;
+      private set;
     }
 
     private bool ParseArchive()
@@ -68,11 +52,11 @@ namespace CropCirclesUnpacker.Storages
           // The rest characters are set to '_' and are ignored.
           char[] attributes = inputReader.ReadChars(4);
 
-          AssetsInfo = ParseAssetsTable(inputReader);
-          Folders = ParseStrings(inputReader);
-          FileExtensions = ParseStrings(inputReader);
+          AssetInfoRaw[] assetsInfoRaw = ParseAssetsTable(inputReader);
+          string[] folders = ParseStrings(inputReader);
+          string[] extensions = ParseStrings(inputReader);
 
-          PrepareAssets();
+          PrepareAssets(assetsInfoRaw, folders, extensions);
 
           Console.WriteLine("Done!");
         }
@@ -90,14 +74,14 @@ namespace CropCirclesUnpacker.Storages
       return true;
     }
 
-    private AssetInfo[] ParseAssetsTable(BinaryReader inputReader)
+    private AssetInfoRaw[] ParseAssetsTable(BinaryReader inputReader)
     {
       FilesTableInfo tableInfo = GetFilesTableInfo(inputReader);
       inputReader.BaseStream.Seek(tableInfo.Offset, SeekOrigin.Begin);
 
       Console.WriteLine("\tReading assets table...");
 
-      AssetInfo[] assetsInfo = new AssetInfo[tableInfo.Count];
+      AssetInfoRaw[] assetsInfo = new AssetInfoRaw[tableInfo.Count];
       for (int i = 0; i < assetsInfo.Length; ++i)
       {
         assetsInfo[i].FolderIndex = inputReader.ReadInt16();
@@ -146,15 +130,17 @@ namespace CropCirclesUnpacker.Storages
       return names;
     }
 
-    private void PrepareAssets()
+    private void PrepareAssets(AssetInfoRaw[] assetsInfoRaw, string[] folders, string[] extensions)
     {
-      Assets = new Asset[AssetsInfo.Length];
-      for (int i = 0; i < Assets.Length; ++i)
+      AssetsInfo = new AssetInfo[assetsInfoRaw.Length];
+      for (int i = 0; i < AssetsInfo.Length; ++i)
       {
-        Assets[i].FileName = AssetsInfo[i].Name;
-        Assets[i].Folder = Folders[AssetsInfo[i].FolderIndex];
-        Assets[i].Extension = FileExtensions[AssetsInfo[i].ExtensionIndex];
-        Assets[i].FullFileName = Assets[i].FileName + Assets[i].Extension;
+        AssetsInfo[i].Name = assetsInfoRaw[i].Name;
+        AssetsInfo[i].Folder = folders[assetsInfoRaw[i].FolderIndex];
+        AssetsInfo[i].Extension = extensions[assetsInfoRaw[i].ExtensionIndex];
+        AssetsInfo[i].FullFileName = AssetsInfo[i].Name + AssetsInfo[i].Extension;
+        AssetsInfo[i].Offset = assetsInfoRaw[i].Offset;
+        AssetsInfo[i].Size = assetsInfoRaw[i].Size;
       }
     }
 
@@ -194,8 +180,7 @@ namespace CropCirclesUnpacker.Storages
             MemoryStream memoryStream = new MemoryStream(buffer);
             BinaryReader resourceStream = new BinaryReader(memoryStream, Encoding);
 
-            string extension = FileExtensions[AssetsInfo[i].ExtensionIndex];
-            switch (extension)
+            switch (AssetsInfo[i].Extension)
             {
               case ".clr":
                 {
@@ -203,7 +188,7 @@ namespace CropCirclesUnpacker.Storages
                   if (palette == null)
                     Debug.Assert(false, "Could not read a palette data from a stream");
                   else
-                    Palettes.Add(palette);
+                    Assets.Add(palette);
                 }
                 break;
 
@@ -213,7 +198,7 @@ namespace CropCirclesUnpacker.Storages
                   if (sprite == null)
                     Debug.Assert(false, "Could not read a sprite data from a stream");
                   else
-                    Sprites.Add(sprite);
+                    Assets.Add(sprite);
                 }
                 break;
               case ".zft":
@@ -222,7 +207,7 @@ namespace CropCirclesUnpacker.Storages
                   if (font == null)
                     Debug.Assert(false, "Could not read a font data from a stream");
                   else
-                    Fonts.Add(font);
+                    Assets.Add(font);
                 }
                 break;
 
@@ -234,7 +219,37 @@ namespace CropCirclesUnpacker.Storages
         }
       }
 
-      return (Palettes.Count + Sprites.Count + Fonts.Count);
+      return Assets.Count;
+    }
+
+    public Asset GetAsset(string name)
+    {
+      if (string.IsNullOrEmpty(name))
+      {
+        Debug.Assert(false, "Asset name is null or empty");
+        return null;
+      }
+
+      for (int i = 0; i < Assets.Count; ++i)
+      {
+        if (Assets[i].Name == name)
+          return Assets[i];
+      }
+
+      return null;
+    }
+
+    public Asset[] GetAssets(Asset.AssetType type)
+    {
+      List<Asset> assets = new List<Asset>();
+
+      for (int i = 0; i < Assets.Count; ++i)
+      {
+        if (Assets[i].Type == type)
+          assets.Add(Assets[i]);
+      }
+
+      return assets.ToArray();
     }
 
     public void ExtractTo(string targetFolder)
@@ -243,11 +258,11 @@ namespace CropCirclesUnpacker.Storages
       {
         using (BinaryReader inputReader = new BinaryReader(inputStream, Encoding))
         {
-          for (int i = 0; i < Assets.Length; ++i)
+          for (int i = 0; i < AssetsInfo.Length; ++i)
           {
-            string fileFolder = Folders[AssetsInfo[i].FolderIndex];
-            string fileExtension = FileExtensions[AssetsInfo[i].ExtensionIndex];
-            string fileFullName = AssetsInfo[i].Name + fileExtension;
+            string fileFolder = AssetsInfo[i].Folder;
+            string fileExtension = AssetsInfo[i].Extension;
+            string fileFullName = AssetsInfo[i].FullFileName;
 
             string folderPath = Path.Combine(targetFolder, fileFolder);
             Directory.CreateDirectory(folderPath);
@@ -294,7 +309,7 @@ namespace CropCirclesUnpacker.Storages
       public Int32 Count;
     }
 
-    private struct AssetInfo
+    private struct AssetInfoRaw
     {
       public Int16 FolderIndex;
       public Int16 ExtensionIndex;
@@ -304,12 +319,14 @@ namespace CropCirclesUnpacker.Storages
     }
     
     //TODO(adm244): private set
-    public struct Asset
+    public struct AssetInfo
     {
       public string Folder;
-      public string FileName;
+      public string Name;
       public string Extension;
       public string FullFileName;
+      public int Offset;
+      public int Size;
     }
   }
 }

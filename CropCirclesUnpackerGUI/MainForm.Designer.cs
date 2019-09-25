@@ -172,9 +172,11 @@
       this.ctrlTreeView.Name = "ctrlTreeView";
       this.ctrlTreeView.Size = new System.Drawing.Size(207, 169);
       this.ctrlTreeView.TabIndex = 0;
+      this.ctrlTreeView.NodeMouseDoubleClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.ctrlTreeView_NodeMouseDoubleClick);
       // 
       // ctrlContentPanel
       // 
+      this.ctrlContentPanel.AutoScroll = true;
       this.ctrlContentPanel.BackColor = System.Drawing.SystemColors.ControlDark;
       this.ctrlContentPanel.Dock = System.Windows.Forms.DockStyle.Fill;
       this.ctrlContentPanel.Location = new System.Drawing.Point(0, 0);
@@ -214,6 +216,7 @@
       this.btnImport.TabIndex = 0;
       this.btnImport.Text = "Import";
       this.btnImport.UseVisualStyleBackColor = true;
+      this.btnImport.Click += new System.EventHandler(this.btnImport_Click);
       // 
       // btnExport
       // 
@@ -224,6 +227,7 @@
       this.btnExport.TabIndex = 1;
       this.btnExport.Text = "Export";
       this.btnExport.UseVisualStyleBackColor = true;
+      this.btnExport.Click += new System.EventHandler(this.btnExport_Click);
       // 
       // ctrlPaletteSelector
       // 

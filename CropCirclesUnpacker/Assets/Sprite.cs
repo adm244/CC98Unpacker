@@ -5,17 +5,17 @@ using CropCirclesUnpacker.Extensions;
 
 namespace CropCirclesUnpacker.Assets
 {
-  public class Sprite
+  public class Sprite : Asset
   {
     private PixelFormat Format = PixelFormat.Format8bppIndexed;
     private byte[] Pixels;
 
     public Sprite(string name, byte[] pixels, int width, int height, bool isBackground)
+      : base(name, AssetType.Sprite)
     {
       Debug.Assert((width > 0) && (height > 0));
       Debug.Assert((width * height) == pixels.Length);
 
-      Name = name;
       Width = width;
       Height = height;
       Background = isBackground;
@@ -31,17 +31,6 @@ namespace CropCirclesUnpacker.Assets
       bitmap.SetPalette(palette.Entries);
 
       return bitmap;
-    }
-
-    public override string ToString()
-    {
-      return Name;
-    }
-
-    public string Name
-    {
-      get;
-      private set;
     }
 
     public int Width
