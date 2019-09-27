@@ -7,17 +7,24 @@ using CropCirclesUnpacker.Storages.Resources;
 using CropCirclesUnpacker.Assets;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Imaging;
 
 namespace CropCirclesUnpackerGUI
 {
   public partial class MainForm : Form
   {
+    private PreviewTypes PreviewType;
+    private object PreviewObject;
+
     private List<MediaStorage> Archives;
     private List<Palette> Palettes;
 
     public MainForm()
     {
       InitializeComponent();
+
+      PreviewType = PreviewTypes.None;
+      PreviewObject = null;
 
       Archives = new List<MediaStorage>();
       Palettes = new List<Palette>();
@@ -216,16 +223,68 @@ namespace CropCirclesUnpackerGUI
       btnExport.Enabled = true;
 
       pictureBox.Image = image;
+
+      PreviewType = PreviewTypes.Image;
+      PreviewObject = image;
     }
 
     private void btnImport_Click(object sender, EventArgs e)
     {
-      // load the content for whatever is currently displayed
+      switch (PreviewType)
+      {
+        case PreviewTypes.Image:
+          ImportImage();
+          break;
+
+        default:
+          Debug.Assert(false, "Import type not implemented");
+          break;
+      }
     }
 
     private void btnExport_Click(object sender, EventArgs e)
     {
-      // save the content of whatever is currently displayed
+      switch (PreviewType)
+      {
+        case PreviewTypes.Image:
+          ExportImage();
+          break;
+
+        default:
+          Debug.Assert(false, "Export type not implemented");
+          break;
+      }
+    }
+
+    private void ImportImage()
+    {
+
+    }
+
+    private void ExportImage()
+    {
+      Debug.Assert(PreviewObject is Image);
+
+      Image image = (Image)PreviewObject;
+
+      ctrlOpenFile.Title = "Select export destination";
+      ctrlOpenFile.CheckFileExists = false;
+      ctrlOpenFile.CheckPathExists = true;
+      ctrlOpenFile.Multiselect = false;
+      ctrlOpenFile.Filter = "Bitmap (*.bmp)|*.bmp";
+
+      if (ctrlOpenFile.ShowDialog() == DialogResult.OK)
+      {
+        image.Save(ctrlOpenFile.FileName, ImageFormat.Bmp);
+        MessageBox.Show(this, "Image was successfully exported!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+      }
+    }
+
+    private enum PreviewTypes
+    {
+      None = 0,
+      Image,
+      Text,
     }
   }
 }
