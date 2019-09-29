@@ -6,8 +6,8 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Windows.Forms;
 using CropCirclesUnpacker.Assets;
-using CropCirclesUnpacker.Storages;
 using CropCirclesUnpacker.Extensions;
+using CropCirclesUnpacker.Storages;
 
 namespace CropCirclesUnpackerGUI
 {
@@ -290,9 +290,13 @@ namespace CropCirclesUnpackerGUI
             return;
         }
 
-        sprite.ChangeImage(bitmap);
-        DisplaySprite(sprite);
+        if (!sprite.ChangeImage(bitmap))
+        {
+          MessageBox.Show(this, "Could not change an image!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+          return;
+        }
 
+        DisplaySprite(sprite);
         MessageBox.Show(this, "Image was successfully imported!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
       }
     }
@@ -328,6 +332,10 @@ namespace CropCirclesUnpackerGUI
             Debug.Assert(PreviewObject is Sprite);
             DisplaySprite((Sprite)PreviewObject);
           }
+          break;
+
+        case PreviewTypes.None:
+          // do nothing
           break;
 
         default:
