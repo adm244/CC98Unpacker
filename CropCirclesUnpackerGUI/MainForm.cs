@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Windows.Forms;
-using CropCirclesUnpacker.Storages;
-using CropCirclesUnpacker.Storages.Resources;
-using CropCirclesUnpacker.Assets;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.IO;
+using System.Windows.Forms;
+using CropCirclesUnpacker.Assets;
+using CropCirclesUnpacker.Storages;
+using CropCirclesUnpacker.Extensions;
 
 namespace CropCirclesUnpackerGUI
 {
@@ -225,7 +225,7 @@ namespace CropCirclesUnpackerGUI
       pictureBox.Image = image;
 
       PreviewType = PreviewTypes.Image;
-      PreviewObject = image;
+      PreviewObject = sprite;
     }
 
     private void btnImport_Click(object sender, EventArgs e)
@@ -258,25 +258,81 @@ namespace CropCirclesUnpackerGUI
 
     private void ImportImage()
     {
+      Debug.Assert(PreviewObject is Sprite);
 
+      Sprite sprite = (Sprite)PreviewObject;
+
+      ctrlOpenFile.Title = "Select image to import...";
+      ctrlOpenFile.CheckFileExists = true;
+      ctrlOpenFile.Multiselect = false;
+      ctrlOpenFile.Filter = "Bitmap (*.bmp)|*.bmp";
+      
+      if (ctrlOpenFile.ShowDialog() == DialogResult.OK)
+      {
+        Bitmap bitmap = new Bitmap(ctrlOpenFile.FileName);
+        if (bitmap == null)
+        {
+          MessageBox.Show(this, "Could not load an image!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+          return;
+        }
+
+        if (bitmap.PixelFormat != PixelFormat.Format8bppIndexed)
+        {
+          MessageBox.Show(this, "Bitmap is not in an 8-bit indexed format!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+          return;
+        }
+
+        Palette palette = GetSelectedPalette();
+        if (!palette.Entries.AreEqual(bitmap.Palette.Entries))
+        {
+          if (MessageBox.Show(this, "Bitmap palette differs from currently selected. Continue to import?", "Palettes are not equal",
+            MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
+            return;
+        }
+
+        sprite.ChangeImage(bitmap);
+        DisplaySprite(sprite);
+
+        MessageBox.Show(this, "Image was successfully imported!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+      }
     }
 
     private void ExportImage()
     {
-      Debug.Assert(PreviewObject is Image);
+      Debug.Assert(PreviewObject is Sprite);
+      Debug.Assert(ctrlContentPanel.Controls.Count == 1);
+      Debug.Assert(ctrlContentPanel.Controls[0] is PictureBox);
 
-      Image image = (Image)PreviewObject;
+      Sprite sprite = (Sprite)PreviewObject;
+      Image image = ((PictureBox)ctrlContentPanel.Controls[0]).Image;
 
-      ctrlOpenFile.Title = "Select export destination";
-      ctrlOpenFile.CheckFileExists = false;
-      ctrlOpenFile.CheckPathExists = true;
-      ctrlOpenFile.Multiselect = false;
-      ctrlOpenFile.Filter = "Bitmap (*.bmp)|*.bmp";
+      ctrlSaveFile.Title = "Select export destination";
+      ctrlSaveFile.CheckFileExists = false;
+      ctrlSaveFile.CheckPathExists = true;
+      ctrlSaveFile.FileName = sprite.Name;
+      ctrlSaveFile.Filter = "Bitmap (*.bmp)|*.bmp";
 
-      if (ctrlOpenFile.ShowDialog() == DialogResult.OK)
+      if (ctrlSaveFile.ShowDialog() == DialogResult.OK)
       {
-        image.Save(ctrlOpenFile.FileName, ImageFormat.Bmp);
+        image.Save(ctrlSaveFile.FileName, ImageFormat.Bmp);
         MessageBox.Show(this, "Image was successfully exported!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+      }
+    }
+
+    private void ctrlPaletteSelector_SelectedValueChanged(object sender, EventArgs e)
+    {
+      switch (PreviewType)
+      {
+        case PreviewTypes.Image:
+          {
+            Debug.Assert(PreviewObject is Sprite);
+            DisplaySprite((Sprite)PreviewObject);
+          }
+          break;
+
+        default:
+          Debug.Assert(false);
+          break;
       }
     }
 

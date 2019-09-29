@@ -40,14 +40,15 @@
       this.ctrlMainContainer = new System.Windows.Forms.SplitContainer();
       this.ctrlSideContainer = new System.Windows.Forms.SplitContainer();
       this.ctrlTreeView = new System.Windows.Forms.TreeView();
+      this.ctrlContentContainer = new System.Windows.Forms.SplitContainer();
+      this.ctrlContentBarPanel = new System.Windows.Forms.Panel();
+      this.ctrlPaletteSelector = new System.Windows.Forms.ComboBox();
+      this.ctrlContentBarPaletteLabel = new System.Windows.Forms.Label();
+      this.btnExport = new System.Windows.Forms.Button();
+      this.btnImport = new System.Windows.Forms.Button();
       this.ctrlContentPanel = new System.Windows.Forms.Panel();
       this.ctrlOpenFile = new System.Windows.Forms.OpenFileDialog();
-      this.ctrlContentContainer = new System.Windows.Forms.SplitContainer();
-      this.btnImport = new System.Windows.Forms.Button();
-      this.btnExport = new System.Windows.Forms.Button();
-      this.ctrlPaletteSelector = new System.Windows.Forms.ComboBox();
-      this.ctrlContentBarPanel = new System.Windows.Forms.Panel();
-      this.ctrlContentBarPaletteLabel = new System.Windows.Forms.Label();
+      this.ctrlSaveFile = new System.Windows.Forms.SaveFileDialog();
       this.ctrlMainMenu.SuspendLayout();
       this.ctrlStatusBar.SuspendLayout();
       this.ctrlMainContainer.Panel1.SuspendLayout();
@@ -86,7 +87,7 @@
       // addArchiveToolStripMenuItem
       // 
       this.addArchiveToolStripMenuItem.Name = "addArchiveToolStripMenuItem";
-      this.addArchiveToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+      this.addArchiveToolStripMenuItem.Size = new System.Drawing.Size(147, 22);
       this.addArchiveToolStripMenuItem.Text = "&Add archive";
       this.addArchiveToolStripMenuItem.Click += new System.EventHandler(this.addArchiveToolStripMenuItem_Click);
       // 
@@ -94,7 +95,7 @@
       // 
       this.clearArchivesToolStripMenuItem.Enabled = false;
       this.clearArchivesToolStripMenuItem.Name = "clearArchivesToolStripMenuItem";
-      this.clearArchivesToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+      this.clearArchivesToolStripMenuItem.Size = new System.Drawing.Size(147, 22);
       this.clearArchivesToolStripMenuItem.Text = "C&lear archives";
       this.clearArchivesToolStripMenuItem.Click += new System.EventHandler(this.clearArchivesToolStripMenuItem_Click);
       // 
@@ -102,18 +103,18 @@
       // 
       this.extractToToolStripMenuItem.Enabled = false;
       this.extractToToolStripMenuItem.Name = "extractToToolStripMenuItem";
-      this.extractToToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+      this.extractToToolStripMenuItem.Size = new System.Drawing.Size(147, 22);
       this.extractToToolStripMenuItem.Text = "E&xtract to...";
       // 
       // toolStripMenuItem1
       // 
       this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-      this.toolStripMenuItem1.Size = new System.Drawing.Size(149, 6);
+      this.toolStripMenuItem1.Size = new System.Drawing.Size(144, 6);
       // 
       // closeToolStripMenuItem
       // 
       this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
-      this.closeToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+      this.closeToolStripMenuItem.Size = new System.Drawing.Size(147, 22);
       this.closeToolStripMenuItem.Text = "&Close";
       this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
       // 
@@ -174,16 +175,6 @@
       this.ctrlTreeView.TabIndex = 0;
       this.ctrlTreeView.NodeMouseDoubleClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.ctrlTreeView_NodeMouseDoubleClick);
       // 
-      // ctrlContentPanel
-      // 
-      this.ctrlContentPanel.AutoScroll = true;
-      this.ctrlContentPanel.BackColor = System.Drawing.SystemColors.ControlDark;
-      this.ctrlContentPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-      this.ctrlContentPanel.Location = new System.Drawing.Point(0, 0);
-      this.ctrlContentPanel.Name = "ctrlContentPanel";
-      this.ctrlContentPanel.Size = new System.Drawing.Size(412, 308);
-      this.ctrlContentPanel.TabIndex = 0;
-      // 
       // ctrlContentContainer
       // 
       this.ctrlContentContainer.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -207,40 +198,6 @@
       this.ctrlContentContainer.SplitterDistance = 28;
       this.ctrlContentContainer.TabIndex = 1;
       // 
-      // btnImport
-      // 
-      this.btnImport.Dock = System.Windows.Forms.DockStyle.Left;
-      this.btnImport.Location = new System.Drawing.Point(3, 3);
-      this.btnImport.Name = "btnImport";
-      this.btnImport.Size = new System.Drawing.Size(75, 22);
-      this.btnImport.TabIndex = 0;
-      this.btnImport.Text = "Import";
-      this.btnImport.UseVisualStyleBackColor = true;
-      this.btnImport.Click += new System.EventHandler(this.btnImport_Click);
-      // 
-      // btnExport
-      // 
-      this.btnExport.Dock = System.Windows.Forms.DockStyle.Left;
-      this.btnExport.Location = new System.Drawing.Point(78, 3);
-      this.btnExport.Name = "btnExport";
-      this.btnExport.Size = new System.Drawing.Size(75, 22);
-      this.btnExport.TabIndex = 1;
-      this.btnExport.Text = "Export";
-      this.btnExport.UseVisualStyleBackColor = true;
-      this.btnExport.Click += new System.EventHandler(this.btnExport_Click);
-      // 
-      // ctrlPaletteSelector
-      // 
-      this.ctrlPaletteSelector.Dock = System.Windows.Forms.DockStyle.Left;
-      this.ctrlPaletteSelector.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-      this.ctrlPaletteSelector.FormattingEnabled = true;
-      this.ctrlPaletteSelector.Location = new System.Drawing.Point(53, 0);
-      this.ctrlPaletteSelector.Margin = new System.Windows.Forms.Padding(0);
-      this.ctrlPaletteSelector.Name = "ctrlPaletteSelector";
-      this.ctrlPaletteSelector.Size = new System.Drawing.Size(185, 21);
-      this.ctrlPaletteSelector.Sorted = true;
-      this.ctrlPaletteSelector.TabIndex = 2;
-      // 
       // ctrlContentBarPanel
       // 
       this.ctrlContentBarPanel.Controls.Add(this.ctrlPaletteSelector);
@@ -253,6 +210,19 @@
       this.ctrlContentBarPanel.Size = new System.Drawing.Size(256, 22);
       this.ctrlContentBarPanel.TabIndex = 2;
       // 
+      // ctrlPaletteSelector
+      // 
+      this.ctrlPaletteSelector.Dock = System.Windows.Forms.DockStyle.Left;
+      this.ctrlPaletteSelector.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+      this.ctrlPaletteSelector.FormattingEnabled = true;
+      this.ctrlPaletteSelector.Location = new System.Drawing.Point(53, 0);
+      this.ctrlPaletteSelector.Margin = new System.Windows.Forms.Padding(0);
+      this.ctrlPaletteSelector.Name = "ctrlPaletteSelector";
+      this.ctrlPaletteSelector.Size = new System.Drawing.Size(185, 21);
+      this.ctrlPaletteSelector.Sorted = true;
+      this.ctrlPaletteSelector.TabIndex = 2;
+      this.ctrlPaletteSelector.SelectedValueChanged += new System.EventHandler(this.ctrlPaletteSelector_SelectedValueChanged);
+      // 
       // ctrlContentBarPaletteLabel
       // 
       this.ctrlContentBarPaletteLabel.AutoSize = true;
@@ -263,6 +233,38 @@
       this.ctrlContentBarPaletteLabel.Size = new System.Drawing.Size(43, 16);
       this.ctrlContentBarPaletteLabel.TabIndex = 3;
       this.ctrlContentBarPaletteLabel.Text = "Palette:";
+      // 
+      // btnExport
+      // 
+      this.btnExport.Dock = System.Windows.Forms.DockStyle.Left;
+      this.btnExport.Location = new System.Drawing.Point(78, 3);
+      this.btnExport.Name = "btnExport";
+      this.btnExport.Size = new System.Drawing.Size(75, 22);
+      this.btnExport.TabIndex = 1;
+      this.btnExport.Text = "Export";
+      this.btnExport.UseVisualStyleBackColor = true;
+      this.btnExport.Click += new System.EventHandler(this.btnExport_Click);
+      // 
+      // btnImport
+      // 
+      this.btnImport.Dock = System.Windows.Forms.DockStyle.Left;
+      this.btnImport.Location = new System.Drawing.Point(3, 3);
+      this.btnImport.Name = "btnImport";
+      this.btnImport.Size = new System.Drawing.Size(75, 22);
+      this.btnImport.TabIndex = 0;
+      this.btnImport.Text = "Import";
+      this.btnImport.UseVisualStyleBackColor = true;
+      this.btnImport.Click += new System.EventHandler(this.btnImport_Click);
+      // 
+      // ctrlContentPanel
+      // 
+      this.ctrlContentPanel.AutoScroll = true;
+      this.ctrlContentPanel.BackColor = System.Drawing.SystemColors.ControlDark;
+      this.ctrlContentPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.ctrlContentPanel.Location = new System.Drawing.Point(0, 0);
+      this.ctrlContentPanel.Name = "ctrlContentPanel";
+      this.ctrlContentPanel.Size = new System.Drawing.Size(412, 308);
+      this.ctrlContentPanel.TabIndex = 0;
       // 
       // MainForm
       // 
@@ -316,6 +318,7 @@
     private System.Windows.Forms.ComboBox ctrlPaletteSelector;
     private System.Windows.Forms.Panel ctrlContentBarPanel;
     private System.Windows.Forms.Label ctrlContentBarPaletteLabel;
+    private System.Windows.Forms.SaveFileDialog ctrlSaveFile;
   }
 }
 

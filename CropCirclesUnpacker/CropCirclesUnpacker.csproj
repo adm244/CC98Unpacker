@@ -47,6 +47,7 @@
     <Compile Include="Assets\Font.cs" />
     <Compile Include="Assets\Palette.cs" />
     <Compile Include="Assets\Sprite.cs" />
+    <Compile Include="Extensions\ArrayExtension.cs" />
     <Compile Include="Extensions\BinaryReaderExtension.cs" />
     <Compile Include="Extensions\BinaryWriterExtension.cs" />
     <Compile Include="Extensions\BitmapExtension.cs" />

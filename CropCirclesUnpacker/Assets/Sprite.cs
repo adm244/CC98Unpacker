@@ -33,6 +33,18 @@ namespace CropCirclesUnpacker.Assets
       return bitmap;
     }
 
+    public bool ChangeImage(Bitmap bitmap)
+    {
+      if (bitmap.PixelFormat != Format)
+        return false;
+
+      if ((bitmap.Width != Width) || (bitmap.Height != Height))
+        return false;
+
+      Pixels = bitmap.GetPixels();
+      return (Pixels != null);
+    }
+
     public int Width
     {
       get;
