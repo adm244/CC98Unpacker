@@ -184,6 +184,11 @@ namespace CropCirclesUnpackerGUI
           DisplaySprite((Sprite)asset);
           break;
 
+        case Asset.AssetType.Font:
+          CropCirclesUnpacker.Assets.Font font = (CropCirclesUnpacker.Assets.Font)asset;
+          DisplaySprite((Sprite)(font.Texture));
+          break;
+
         default:
           Debug.Assert(false, "Asset type not implemented");
           break;
