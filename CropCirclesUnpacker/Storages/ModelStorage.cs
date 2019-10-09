@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using CropCirclesUnpacker.Assets;
-using CropCirclesUnpacker.Assets.ModelBlocks;
+using CropCirclesUnpacker.Assets.ModelBlocks.Base;
 using CropCirclesUnpacker.Extensions;
 
 namespace CropCirclesUnpacker.Storages
@@ -61,48 +61,26 @@ namespace CropCirclesUnpacker.Storages
         return false;
 
       //NOTE(adm244): check for duplicated header
-      Int32 magic = inputReader.ReadInt32();
+      Int32 magic = inputReader.PeekInt32();
       if (magic == Signature)
       {
-        inputReader.BaseStream.Seek(-sizeof(Int32), SeekOrigin.Current);
         if (!ReadHeader(inputReader))
           return false;
       }
 
       while (!inputReader.EOF())
       {
-        string blockTypeName = inputReader.ReadUInt32AsString();
-        if (Enum.IsDefined(typeof(ModelBlock.BlockType), blockTypeName))
+        ModelBlock block = ModelBlock.ParseBlock(inputReader);
+        if (block == null)
         {
-          ModelBlock.BlockType blockType = 
-            (ModelBlock.BlockType)Enum.Parse(typeof(ModelBlock.BlockType), blockTypeName, true);
-          if (!ParseBlock(inputReader, blockType))
-            Debug.Assert(false, "Could not parse a block!");
-        }
-        else
-        {
-          Debug.Assert(false, "Undefined block encountered!");
+          Debug.Assert(false, "Could not parse a block!");
           break;
         }
+
+        Blocks.Add(block);
       }
 
       return (Blocks.Count > 0);
-    }
-
-    private bool ParseBlock(BinaryReader inputReader, ModelBlock.BlockType type)
-    {
-      ModelBlock block = ModelBlock.Create(type);
-      if (block == null)
-      {
-        Debug.Assert(false, "ModelBlock.Create returned null!");
-        return false;
-      }
-
-      if (!block.Parse(inputReader))
-        return false;
-
-      Blocks.Add(block);
-      return true;
     }
   }
 }

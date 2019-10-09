@@ -16,6 +16,7 @@ namespace CropCirclesUnpacker.Storages
       LibraryPath = libraryPath;
     }
 
+    //TODO(adm244): make this virtual
     protected abstract bool Parse(BinaryReader inputReader);
 
     protected bool ReadHeader(BinaryReader inputReader)

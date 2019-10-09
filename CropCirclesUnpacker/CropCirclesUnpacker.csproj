@@ -48,7 +48,11 @@
     <Compile Include="Assets\Model.cs" />
     <Compile Include="Assets\ModelBlocks\BaseModelBlock.cs" />
     <Compile Include="Assets\ModelBlocks\BmpVModelBlock.cs" />
-    <Compile Include="Assets\ModelBlocks\ModelBlock.cs" />
+    <Compile Include="Assets\ModelBlocks\Base\ModelSubBlock.cs" />
+    <Compile Include="Assets\ModelBlocks\Base\ModelBlock.cs" />
+    <Compile Include="Assets\ModelBlocks\BrnModelBlock.cs" />
+    <Compile Include="Assets\ModelBlocks\CModModelBlock.cs" />
+    <Compile Include="Assets\ModelBlocks\CplxModelBlock.cs" />
     <Compile Include="Assets\Palette.cs" />
     <Compile Include="Assets\Sprite.cs" />
     <Compile Include="Extensions\ArrayExtension.cs" />

@@ -52,5 +52,13 @@ namespace CropCirclesUnpacker.Extensions
 
       return Encoding.ASCII.GetString(buffer);
     }
+
+    public static Int32 PeekInt32(this BinaryReader reader)
+    {
+      Int32 value = reader.ReadInt32();
+      reader.BaseStream.Seek(-sizeof(Int32), SeekOrigin.Current);
+      
+      return value;
+    }
   }
 }
