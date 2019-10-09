@@ -2,16 +2,12 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Text;
 using CropCirclesUnpacker.Extensions;
 
 namespace CropCirclesUnpacker.Storages
 {
-  public abstract class ResourceStorage
+  public abstract class ResourceStorage : BaseStorage
   {
-    protected static readonly Int32 Signature = 0x6F72657A; // "zero"
-
-    private string LibraryPath;
     private List<Section> Sections;
     
     protected int Width;
@@ -19,16 +15,14 @@ namespace CropCirclesUnpacker.Storages
     protected byte[] Pixels;
     protected ResourceType Type;
 
-    private Encoding Encoding = Encoding.GetEncoding(1252);
-
     protected ResourceStorage()
       : this(string.Empty)
     {
     }
 
     protected ResourceStorage(string filePath)
+      : base(filePath)
     {
-      LibraryPath = filePath;
       Sections = new List<Section>(0);
 
       Width = 0;
@@ -47,27 +41,24 @@ namespace CropCirclesUnpacker.Storages
       {
         using (BinaryReader inputReader = new BinaryReader(inputStream, Encoding))
         {
-          result = ParseFile(inputReader);
+          result = Parse(inputReader);
         }
       }
 
       return result;
     }
 
-    protected bool ParseFile(BinaryReader inputReader)
+    protected override bool Parse(BinaryReader inputReader)
     {
       bool result = false;
 
       Console.WriteLine("Parsing {0}...", Path.GetFileName(LibraryPath));
 
-      if (!IsValidFile(inputReader))
+      if (!ReadHeader(inputReader))
       {
         Console.WriteLine("Failed. Invalid or corrupt file detected!");
         return false;
       }
-
-      //NOTE(adm244): do we care about attributes?
-      char[] attributes = inputReader.ReadChars(4);
 
       result = ParseSectionsTable(inputReader);
       result = ParseSections(inputReader);
@@ -75,15 +66,6 @@ namespace CropCirclesUnpacker.Storages
       Console.WriteLine("Done!");
 
       return result;
-    }
-
-    protected bool IsValidFile(BinaryReader inputReader)
-    {
-      Int32 signature = inputReader.ReadInt32();
-      if (signature != Signature)
-        return false;
-
-      return true;
     }
 
     private bool ParseSectionsTable(BinaryReader inputReader)
@@ -194,8 +176,8 @@ namespace CropCirclesUnpacker.Storages
       Height = inputReader.ReadUInt16();
 
       //NOTE(adm244): seems like those are never used
-      Int32 unk04 = inputReader.ReadInt32();
-      Int32 unk05 = inputReader.ReadInt32();
+      Int32 unk04 = inputReader.ReadInt32(); // 0x1
+      Int32 unk05 = inputReader.ReadInt32(); // sizeof(DATA)
 
       return true;
     }

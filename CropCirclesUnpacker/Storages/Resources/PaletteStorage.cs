@@ -25,7 +25,7 @@ namespace CropCirclesUnpacker.Storages.Resources
     public static Palette ReadFromStream(BinaryReader inputReader, string name)
     {
       PaletteStorage storage = new PaletteStorage();
-      if (!storage.ParseFile(inputReader))
+      if (!storage.Parse(inputReader))
         return null;
 
       return new Palette(name, storage.Colours, storage.Lookups);

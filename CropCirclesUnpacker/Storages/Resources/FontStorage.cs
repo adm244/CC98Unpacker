@@ -25,7 +25,7 @@ namespace CropCirclesUnpacker.Storages.Resources
     public static Font ReadFromStream(BinaryReader inputReader, string name)
     {
       FontStorage storage = new FontStorage();
-      if (!storage.ParseFile(inputReader))
+      if (!storage.Parse(inputReader))
         return null;
 
       Sprite texture = new Sprite(name, storage.Pixels, storage.Width, storage.Height, true);

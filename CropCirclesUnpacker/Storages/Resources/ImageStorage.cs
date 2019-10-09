@@ -25,7 +25,7 @@ namespace CropCirclesUnpacker.Storages.Resources
     public static Sprite ReadFromStream(BinaryReader inputReader, string name)
     {
       ImageStorage storage = new ImageStorage();
-      if (!storage.ParseFile(inputReader))
+      if (!storage.Parse(inputReader))
         return null;
 
       bool isBackground = true;

@@ -10,18 +10,13 @@ using CropCirclesUnpacker.Utils;
 
 namespace CropCirclesUnpacker.Storages
 {
-  public class MediaStorage
+  public class MediaStorage : BaseStorage
   {
-    private static readonly Int32 Signature = 0x6F72657A; // "zero"
-
-    public string LibraryPath;
     private List<Asset> Assets;
 
-    private Encoding Encoding = Encoding.GetEncoding(1252);
-
     private MediaStorage(string libraryPath)
+      : base(libraryPath)
     {
-      LibraryPath = libraryPath;
       Assets = new List<Asset>();
       AssetsInfo = new AssetInfo[0];
     }
@@ -32,44 +27,38 @@ namespace CropCirclesUnpacker.Storages
       private set;
     }
 
-    private bool ParseArchive()
+    private bool Parse()
     {
+      bool result = false;
+
       using (FileStream inputStream = new FileStream(LibraryPath, FileMode.Open))
       {
         using (BinaryReader inputReader = new BinaryReader(inputStream, Encoding))
         {
-          Console.WriteLine("Parsing {0}...", Path.GetFileName(LibraryPath));
-
-          if (!IsValidFile(inputReader))
-          {
-            Console.WriteLine("Failed. Invalid or corrupt file detected!");
-            return false;
-          }
-
-          //NOTE(adm244): do we care about attributes?
-          // First character specifies file type: binary ('b') or text ('a')
-          // Second character specifies file endianess: little ('l') or big ('b')
-          // The rest characters are set to '_' and are ignored.
-          char[] attributes = inputReader.ReadChars(4);
-
-          AssetInfoRaw[] assetsInfoRaw = ParseAssetsTable(inputReader);
-          string[] folders = ParseStrings(inputReader);
-          string[] extensions = ParseStrings(inputReader);
-
-          PrepareAssets(assetsInfoRaw, folders, extensions);
-
-          Console.WriteLine("Done!");
+          result = Parse(inputReader);
         }
       }
 
-      return true;
+      return result;
     }
 
-    private bool IsValidFile(BinaryReader inputReader)
+    protected override bool Parse(BinaryReader inputReader)
     {
-      Int32 signature = inputReader.ReadInt32();
-      if (signature != Signature)
+      Console.WriteLine("Parsing {0}...", Path.GetFileName(LibraryPath));
+
+      if (!ReadHeader(inputReader))
+      {
+        Console.WriteLine("Failed. Invalid or corrupt file detected!");
         return false;
+      }
+
+      AssetInfoRaw[] assetsInfoRaw = ParseAssetsTable(inputReader);
+      string[] folders = ParseStrings(inputReader);
+      string[] extensions = ParseStrings(inputReader);
+
+      PrepareAssets(assetsInfoRaw, folders, extensions);
+
+      Console.WriteLine("Done!");
 
       return true;
     }
@@ -147,7 +136,7 @@ namespace CropCirclesUnpacker.Storages
     public static MediaStorage ReadFromFile(string filePath)
     {
       MediaStorage mediaFile = new MediaStorage(filePath);
-      if (!mediaFile.ParseArchive())
+      if (!mediaFile.Parse())
       {
         Console.WriteLine("ERROR: Could not parse {0}", filePath);
         return null;
