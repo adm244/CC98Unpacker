@@ -57,14 +57,14 @@ namespace CropCirclesUnpacker.Storages
 
     protected override bool Parse(BinaryReader inputReader)
     {
-      if (!ReadHeader(inputReader))
+      if (!base.Parse(inputReader))
         return false;
 
       //NOTE(adm244): check for duplicated header
       Int32 magic = inputReader.PeekInt32();
       if (magic == Signature)
       {
-        if (!ReadHeader(inputReader))
+        if (!base.Parse(inputReader))
           return false;
       }
 

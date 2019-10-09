@@ -46,7 +46,7 @@ namespace CropCirclesUnpacker.Storages
     {
       Console.WriteLine("Parsing {0}...", Path.GetFileName(LibraryPath));
 
-      if (!ReadHeader(inputReader))
+      if (!base.Parse(inputReader))
       {
         Console.WriteLine("Failed. Invalid or corrupt file detected!");
         return false;
