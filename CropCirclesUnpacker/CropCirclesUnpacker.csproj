@@ -45,12 +45,18 @@
   <ItemGroup>
     <Compile Include="Assets\Asset.cs" />
     <Compile Include="Assets\Font.cs" />
+    <Compile Include="Assets\Model.cs" />
+    <Compile Include="Assets\ModelBlocks\BaseModelBlock.cs" />
+    <Compile Include="Assets\ModelBlocks\BmpVModelBlock.cs" />
+    <Compile Include="Assets\ModelBlocks\ModelBlock.cs" />
     <Compile Include="Assets\Palette.cs" />
     <Compile Include="Assets\Sprite.cs" />
     <Compile Include="Extensions\ArrayExtension.cs" />
     <Compile Include="Extensions\BinaryReaderExtension.cs" />
     <Compile Include="Extensions\BinaryWriterExtension.cs" />
     <Compile Include="Extensions\BitmapExtension.cs" />
+    <Compile Include="Storages\BaseStorage.cs" />
+    <Compile Include="Storages\ModelStorage.cs" />
     <Compile Include="Storages\ResourceStorage.cs" />
     <Compile Include="Storages\Resources\FontStorage.cs" />
     <Compile Include="Storages\Resources\ImageStorage.cs" />

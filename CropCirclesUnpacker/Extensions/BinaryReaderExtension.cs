@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Text;
 
 namespace CropCirclesUnpacker.Extensions
@@ -35,6 +36,21 @@ namespace CropCirclesUnpacker.Extensions
       }
 
       return new string(buffer, 0, i);
+    }
+
+    public static string ReadUInt32AsString(this BinaryReader reader)
+    {
+      UInt32 value = reader.ReadUInt32();
+      if (value == 0)
+        return string.Empty;
+      
+      byte[] buffer = new byte[4];
+      buffer[0] = (byte)((value >> 24) & 0xFF);
+      buffer[1] = (byte)((value >> 16) & 0xFF);
+      buffer[2] = (byte)((value >> 8) & 0xFF);
+      buffer[3] = (byte)((value) & 0xFF);
+
+      return Encoding.ASCII.GetString(buffer);
     }
   }
 }

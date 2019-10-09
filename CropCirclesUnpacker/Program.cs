@@ -2,6 +2,7 @@
 using System.Drawing.Imaging;
 using System.IO;
 using CropCirclesUnpacker.Assets;
+using CropCirclesUnpacker.Storages;
 using CropCirclesUnpacker.Storages.Resources;
 
 namespace CropCirclesUnpacker
@@ -11,8 +12,10 @@ namespace CropCirclesUnpacker
     public static void Main(string[] args)
     {
       string filePath = args[0];
-      string palettePath = args[1];
+      //string palettePath = args[1];
       /*string fontPath = args[1];*/
+
+      Model model = ModelStorage.LoadFromFile(filePath);
 
       // menu.dat extraction
       /*MediaStorage media = MediaStorage.ReadFromFile(palettePath);
@@ -23,7 +26,7 @@ namespace CropCirclesUnpacker
       media.ExtractTo(Environment.CurrentDirectory);*/
 
       // clr parsing
-      Palette palette = PaletteStorage.ReadFromFile(palettePath);
+      //Palette palette = PaletteStorage.ReadFromFile(palettePath);
 
       // zft parsing
       //Font font = FontStorage.ReadFromFile(fontPath, palette);
@@ -51,16 +54,16 @@ namespace CropCirclesUnpacker
       }*/
 
       // zim (sprite) parsing
-      string[] sprites = Directory.GetFiles(Path.GetDirectoryName(filePath));
+      /*string[] sprites = Directory.GetFiles(Path.GetDirectoryName(filePath));
       for (int i = 0; i < sprites.Length; ++i)
       {
         if (Path.GetExtension(sprites[i]) != ".zim")
           continue;
 
         Sprite sprite = ImageStorage.ReadFromFile(sprites[i]);
-        /*Bitmap bitmap = sprite.CreateBitmap(palette);
-        bitmap.Save(string.Format("{0}.bmp", Path.GetFileNameWithoutExtension(sprites[i])), ImageFormat.Bmp);*/
-      }
+        //Bitmap bitmap = sprite.CreateBitmap(palette);
+        //bitmap.Save(string.Format("{0}.bmp", Path.GetFileNameWithoutExtension(sprites[i])), ImageFormat.Bmp);
+      }*/
     }
   }
 }

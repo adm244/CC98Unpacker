@@ -32,6 +32,7 @@ namespace CropCirclesUnpacker.Assets
       Font,
       Palette,
       Sprite,
+      Model,
     }
   }
 }
