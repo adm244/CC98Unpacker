@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-using CropCirclesUnpacker.Assets.ModelBlocks.Base;
+using CropCirclesUnpacker.Assets.ModelBlocks;
 
 namespace CropCirclesUnpacker.Assets.ModelBlocks
 {

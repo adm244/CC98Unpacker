@@ -20,7 +20,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -48,11 +48,12 @@
     <Compile Include="Assets\Model.cs" />
     <Compile Include="Assets\ModelBlocks\BaseModelBlock.cs" />
     <Compile Include="Assets\ModelBlocks\BmpVModelBlock.cs" />
-    <Compile Include="Assets\ModelBlocks\Base\ModelSubBlock.cs" />
-    <Compile Include="Assets\ModelBlocks\Base\ModelBlock.cs" />
+    <Compile Include="Assets\ModelBlocks\ModelBlock.cs" />
     <Compile Include="Assets\ModelBlocks\BrnModelBlock.cs" />
     <Compile Include="Assets\ModelBlocks\CModModelBlock.cs" />
     <Compile Include="Assets\ModelBlocks\CplxModelBlock.cs" />
+    <Compile Include="Assets\ModelBlocks\DataBlock.cs" />
+    <Compile Include="Assets\ModelBlocks\SeqVModelBlock.cs" />
     <Compile Include="Assets\Palette.cs" />
     <Compile Include="Assets\Sprite.cs" />
     <Compile Include="Extensions\ArrayExtension.cs" />

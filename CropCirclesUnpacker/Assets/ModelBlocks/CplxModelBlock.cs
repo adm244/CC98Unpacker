@@ -1,9 +1,8 @@
 ﻿using System.IO;
-using CropCirclesUnpacker.Assets.ModelBlocks.Base;
 
 namespace CropCirclesUnpacker.Assets.ModelBlocks
 {
-  public class CplxModelBlock : ModelSubBlock
+  public class CplxModelBlock : ModelBlock
   {
     public CplxModelBlock()
       : base(BlockType.Cplx)
@@ -13,6 +12,9 @@ namespace CropCirclesUnpacker.Assets.ModelBlocks
     public override bool Parse(BinaryReader inputReader)
     {
       if (!base.Parse(inputReader))
+        return false;
+
+      if (!ParseSubBlock(inputReader))
         return false;
 
       return true;

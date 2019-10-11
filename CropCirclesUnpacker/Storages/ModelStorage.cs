@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using CropCirclesUnpacker.Assets;
-using CropCirclesUnpacker.Assets.ModelBlocks.Base;
+using CropCirclesUnpacker.Assets.ModelBlocks;
 using CropCirclesUnpacker.Extensions;
 
 namespace CropCirclesUnpacker.Storages

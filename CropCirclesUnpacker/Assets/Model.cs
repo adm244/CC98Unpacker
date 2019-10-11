@@ -1,4 +1,4 @@
-﻿using CropCirclesUnpacker.Assets.ModelBlocks.Base;
+﻿using CropCirclesUnpacker.Assets.ModelBlocks;
 
 namespace CropCirclesUnpacker.Assets
 {

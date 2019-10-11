@@ -1,13 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using CropCirclesUnpacker.Extensions;
 
-namespace CropCirclesUnpacker.Assets.ModelBlocks.Base
+namespace CropCirclesUnpacker.Assets.ModelBlocks
 {
   public class ModelBlock
   {
-    protected BlockContentType ContentType;
+    protected List<ModelBlock> SubBlocks;
+    protected string ContentName;
     protected uint Flags;
 
     public BlockType Type
@@ -18,27 +20,15 @@ namespace CropCirclesUnpacker.Assets.ModelBlocks.Base
 
     protected ModelBlock(BlockType type)
     {
-      ContentType = BlockContentType.Unknown;
+      SubBlocks = new List<ModelBlock>();
+      ContentName = string.Empty;
       Flags = 0x80000001;
       Type = type;
     }
 
     public virtual bool Parse(BinaryReader inputReader)
     {
-      BlockContentType type = BlockContentType.Unknown;
-
-      string typeName = inputReader.ReadUInt32AsString();
-      if (!string.IsNullOrEmpty(typeName))
-      {
-        if (!Enum.IsDefined(typeof(BlockContentType), typeName))
-        {
-          Debug.Assert(false, "Undefined base block type encountered!");
-          return false;
-        }
-        type = (BlockContentType)Enum.Parse(typeof(BlockContentType), typeName, true);
-      }
-
-      ContentType = type;
+      ContentName = inputReader.ReadUInt32AsString();
       Flags = inputReader.ReadUInt32();
 
       return true;
@@ -72,6 +62,54 @@ namespace CropCirclesUnpacker.Assets.ModelBlocks.Base
       return block;
     }
 
+    public bool ParseSubBlock(BinaryReader inputReader)
+    {
+      bool continueParsing = false;
+      do
+      {
+        string subBlockTypeName = inputReader.ReadUInt32AsString();
+        if (!Enum.IsDefined(typeof(SubBlockType), subBlockTypeName))
+        {
+          Debug.Assert(false, "Undefined sub block type encountered!");
+          return false;
+        }
+
+        SubBlockType subBlockType = (SubBlockType)Enum.Parse(typeof(SubBlockType), subBlockTypeName);
+        switch (subBlockType)
+        {
+          case SubBlockType.CInt:
+          case SubBlockType.CMod:
+            continueParsing = ParseSubBlock(inputReader, subBlockType);
+            break;
+
+          case SubBlockType.CEnd:
+            continueParsing = false;
+            break;
+
+          default:
+            Debug.Assert(false, "Unimplemented sub block type!");
+            break;
+        }
+      } while (continueParsing);
+
+      return (SubBlocks.Count > 0);
+    }
+
+    private bool ParseSubBlock(BinaryReader inputReader, SubBlockType type)
+    {
+      ModelBlock block = null;
+      if (type == SubBlockType.CMod)
+        block = ModelBlock.ParseBlock(inputReader, BlockType.CMod);
+      else
+        block = ModelBlock.ParseBlock(inputReader);
+
+      if (block == null)
+        return false;
+
+      SubBlocks.Add(block);
+      return true;
+    }
+
     private static ModelBlock Create(BlockType type)
     {
       switch (type)
@@ -84,6 +122,8 @@ namespace CropCirclesUnpacker.Assets.ModelBlocks.Base
           return new CModModelBlock();
         case BlockType.Brn_:
           return new BrnModelBlock();
+        case BlockType.SeqV:
+          return new SeqVModelBlock();
 
         default:
           Debug.Assert(false, "Attempting to create unimplemented model block!");
@@ -91,11 +131,11 @@ namespace CropCirclesUnpacker.Assets.ModelBlocks.Base
       }
     }
 
-    public enum BlockContentType
+    private enum SubBlockType
     {
-      Unknown = 0,
-      View,
-      Brn_,
+      CInt,
+      CMod,
+      CEnd,
     }
 
     public enum BlockType
@@ -104,6 +144,7 @@ namespace CropCirclesUnpacker.Assets.ModelBlocks.Base
       Cplx,
       CMod,
       Brn_,
+      SeqV,
     }
   }
 }
