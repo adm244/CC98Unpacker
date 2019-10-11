@@ -124,6 +124,8 @@ namespace CropCirclesUnpacker.Assets.ModelBlocks
           return new BrnModelBlock();
         case BlockType.SeqV:
           return new SeqVModelBlock();
+        case BlockType.TxtV:
+          return new TxtVModelBlock();
 
         default:
           Debug.Assert(false, "Attempting to create unimplemented model block!");
@@ -145,6 +147,7 @@ namespace CropCirclesUnpacker.Assets.ModelBlocks
       CMod,
       Brn_,
       SeqV,
+      TxtV,
     }
   }
 }

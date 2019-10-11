@@ -14,7 +14,7 @@ namespace CropCirclesUnpacker.Extensions
     public static string ReadCString(this BinaryReader reader)
     {
       StringBuilder sb = new StringBuilder();
-      while (reader.BaseStream.Position != reader.BaseStream.Length)
+      while (!reader.EOF())
       {
         char symbol = reader.ReadChar();
         if (symbol == 0) break;
