@@ -4,6 +4,7 @@ using System.IO;
 using CropCirclesUnpacker.Assets;
 using CropCirclesUnpacker.Storages;
 using CropCirclesUnpacker.Storages.Resources;
+using System.Collections.Generic;
 
 namespace CropCirclesUnpacker
 {
@@ -15,7 +16,21 @@ namespace CropCirclesUnpacker
       //string palettePath = args[1];
       /*string fontPath = args[1];*/
 
-      Model model = ModelStorage.LoadFromFile(filePath);
+      //Model model = ModelStorage.LoadFromFile(filePath);
+
+      List<Model> models = new List<Model>();
+      string[] files = Directory.GetFiles(filePath);
+      for (int i = 0; i < files.Length; ++i)
+      {
+        if (Path.GetExtension(files[i]) != ".mod")
+          continue;
+
+        Model model = ModelStorage.LoadFromFile(files[i]);
+        if (model != null)
+          models.Add(model);
+      }
+
+      int end = 0;
 
       // menu.dat extraction
       /*MediaStorage media = MediaStorage.ReadFromFile(palettePath);

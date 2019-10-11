@@ -55,7 +55,9 @@ namespace CropCirclesUnpacker.Assets.ModelBlocks
         Values.Add(value);
       }
 
-      return (Values.Count > 0);
+      //NOTE(adm244): some files DO contain empty data blocks (named 'none')
+      //return (Values.Count > 0);
+      return true;
     }
 
     private static DataBlockType GetType(string typeName)
