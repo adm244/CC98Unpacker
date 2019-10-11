@@ -1,17 +1,16 @@
 ﻿using System.IO;
+using CropCirclesUnpacker.Extensions;
 
 namespace CropCirclesUnpacker.Assets.ModelBlocks
 {
-  public class CplxModelBlock : ModelBlock
+  public class PScnModelBlock : ScenModelBlock
   {
-    public CplxModelBlock()
-      : base(BlockType.Cplx)
-    {
-    }
+    private string Name;
 
-    protected CplxModelBlock(BlockType type)
-      : base(type)
+    public PScnModelBlock()
+      : base(BlockType.PScn)
     {
+      Name = string.Empty;
     }
 
     public override bool Parse(BinaryReader inputReader)
@@ -19,8 +18,7 @@ namespace CropCirclesUnpacker.Assets.ModelBlocks
       if (!base.Parse(inputReader))
         return false;
 
-      if (!ParseSubBlock(inputReader))
-        return false;
+      Name = inputReader.ReadUInt32AsString();
 
       return true;
     }
