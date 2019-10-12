@@ -48,8 +48,10 @@
     <Compile Include="Assets\Model.cs" />
     <Compile Include="Assets\ModelBlocks\BaseModelBlock.cs" />
     <Compile Include="Assets\ModelBlocks\BmpVModelBlock.cs" />
+    <Compile Include="Assets\ModelBlocks\GButModelBlock.cs" />
     <Compile Include="Assets\ModelBlocks\GChkModelBlock.cs" />
     <Compile Include="Assets\ModelBlocks\GEdtModelBlock.cs" />
+    <Compile Include="Assets\ModelBlocks\GLstModelBlock.cs" />
     <Compile Include="Assets\ModelBlocks\ModelBlock.cs" />
     <Compile Include="Assets\ModelBlocks\BrnModelBlock.cs" />
     <Compile Include="Assets\ModelBlocks\CModModelBlock.cs" />
@@ -57,6 +59,7 @@
     <Compile Include="Assets\ModelBlocks\DataBlock.cs" />
     <Compile Include="Assets\ModelBlocks\MScnModelBlock.cs" />
     <Compile Include="Assets\ModelBlocks\PScnModelBlock.cs" />
+    <Compile Include="Assets\ModelBlocks\PshBModelBlock.cs" />
     <Compile Include="Assets\ModelBlocks\RBtnModelBlock.cs" />
     <Compile Include="Assets\ModelBlocks\RctVModelBlock.cs" />
     <Compile Include="Assets\ModelBlocks\ScenModelBlock.cs" />

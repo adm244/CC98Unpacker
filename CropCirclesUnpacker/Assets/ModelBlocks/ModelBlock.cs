@@ -141,6 +141,12 @@ namespace CropCirclesUnpacker.Assets.ModelBlocks
           return new RctVModelBlock();
         case BlockType.GEdt:
           return new GEdtModelBlock();
+        case BlockType.GBut:
+          return new GButModelBlock();
+        case BlockType.PshB:
+          return new PshBModelBlock();
+        case BlockType.GLst:
+          return new GLstModelBlock();
 
         default:
           Debug.Assert(false, "Attempting to create unimplemented model block!");
@@ -168,6 +174,9 @@ namespace CropCirclesUnpacker.Assets.ModelBlocks
       MScn,
       RctV,
       GEdt,
+      GBut,
+      PshB,
+      GLst,
     }
   }
 }

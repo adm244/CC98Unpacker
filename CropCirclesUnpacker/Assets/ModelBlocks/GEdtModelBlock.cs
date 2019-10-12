@@ -7,7 +7,7 @@ namespace CropCirclesUnpacker.Assets.ModelBlocks
   public class GEdtModelBlock : BaseModelBlock
   {
     private UInt64 Unk01;
-    private UInt64 Unk02;
+    protected double Unk02;
     private Int32 Unk03;
     private string Name;
 
@@ -20,7 +20,7 @@ namespace CropCirclesUnpacker.Assets.ModelBlocks
       : base(type)
     {
       Unk01 = default(UInt64);
-      Unk02 = default(UInt64);
+      Unk02 = default(double);
       Unk03 = default(Int32);
       Name = string.Empty;
     }
@@ -31,7 +31,7 @@ namespace CropCirclesUnpacker.Assets.ModelBlocks
         return false;
 
       Unk01 = inputReader.ReadUInt64();
-      Unk02 = inputReader.ReadUInt64();
+      Unk02 = inputReader.ReadDouble();
       Unk03 = inputReader.ReadInt32();
       Name = inputReader.ReadCString();
 
