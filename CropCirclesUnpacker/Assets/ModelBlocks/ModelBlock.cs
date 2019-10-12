@@ -18,6 +18,11 @@ namespace CropCirclesUnpacker.Assets.ModelBlocks
       private set;
     }
 
+    protected ModelBlock()
+    {
+      throw new InvalidOperationException();
+    }
+
     protected ModelBlock(BlockType type)
     {
       SubBlocks = new List<ModelBlock>();
@@ -128,6 +133,8 @@ namespace CropCirclesUnpacker.Assets.ModelBlocks
           return new TxtVModelBlock();
         case BlockType.PScn:
           return new PScnModelBlock();
+        case BlockType.RBtn:
+          return new RBtnModelBlock();
 
         default:
           Debug.Assert(false, "Attempting to create unimplemented model block!");
@@ -151,6 +158,7 @@ namespace CropCirclesUnpacker.Assets.ModelBlocks
       SeqV,
       TxtV,
       PScn,
+      RBtn,
     }
   }
 }

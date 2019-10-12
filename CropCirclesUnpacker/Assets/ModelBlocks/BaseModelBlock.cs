@@ -11,6 +11,12 @@ namespace CropCirclesUnpacker.Assets.ModelBlocks
     protected Int64 Unk03;
     protected Int64 Unk04;
 
+    protected BaseModelBlock()
+      : base()
+    {
+      throw new InvalidOperationException();
+    }
+
     protected BaseModelBlock(BlockType type)
       : base(type)
     {
