@@ -11,9 +11,9 @@ namespace CropCirclesUnpacker.Assets.ModelBlocks
     private Int32 Unk03;
     private string Name;
 
-    protected GEdtModelBlock()
+    public GEdtModelBlock()
+      : this(BlockType.GEdt)
     {
-      throw new InvalidOperationException();
     }
 
     protected GEdtModelBlock(BlockType type)
