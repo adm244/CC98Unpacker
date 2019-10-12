@@ -7,6 +7,7 @@ namespace CropCirclesUnpacker.Assets.ModelBlocks
   public class ScenModelBlock : CplxModelBlock
   {
     private Int32 Unk01;
+    private Int32 Unk02;
 
     private ScenModelBlock()
     {
@@ -23,16 +24,17 @@ namespace CropCirclesUnpacker.Assets.ModelBlocks
     {
       if (!base.Parse(inputReader))
         return false;
-      
+
       Unk01 = inputReader.ReadInt32();
-      if (Unk01 != 0)
+      Unk02 = inputReader.ReadInt32();
+      if (Unk02 != 0)
       {
-        Trace.Assert(false, "Value of Unk01 in Scen block is not zero!\n"
+        Trace.Assert(false, "Value of Unk02 in Scen block is not zero!\n"
           + "Filename: " + ((FileStream)inputReader.BaseStream).Name);
         return false;
       }
 
-      //TODO(adm244): implement parsing properly if there's a file that use Unk01 != 0
+      //TODO(adm244): implement parsing properly if there's a file that use Unk02 != 0
 
       return true;
     }
