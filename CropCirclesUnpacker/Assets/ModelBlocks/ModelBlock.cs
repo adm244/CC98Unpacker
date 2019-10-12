@@ -135,6 +135,10 @@ namespace CropCirclesUnpacker.Assets.ModelBlocks
           return new PScnModelBlock();
         case BlockType.RBtn:
           return new RBtnModelBlock();
+        case BlockType.MScn:
+          return new MScnModelBlock();
+        case BlockType.RctV:
+          return new RctVModelBlock();
 
         default:
           Debug.Assert(false, "Attempting to create unimplemented model block!");
@@ -159,6 +163,8 @@ namespace CropCirclesUnpacker.Assets.ModelBlocks
       TxtV,
       PScn,
       RBtn,
+      MScn,
+      RctV,
     }
   }
 }

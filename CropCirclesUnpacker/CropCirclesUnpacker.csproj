@@ -55,8 +55,10 @@
     <Compile Include="Assets\ModelBlocks\CModModelBlock.cs" />
     <Compile Include="Assets\ModelBlocks\CplxModelBlock.cs" />
     <Compile Include="Assets\ModelBlocks\DataBlock.cs" />
+    <Compile Include="Assets\ModelBlocks\MScnModelBlock.cs" />
     <Compile Include="Assets\ModelBlocks\PScnModelBlock.cs" />
     <Compile Include="Assets\ModelBlocks\RBtnModelBlock.cs" />
+    <Compile Include="Assets\ModelBlocks\RctVModelBlock.cs" />
     <Compile Include="Assets\ModelBlocks\ScenModelBlock.cs" />
     <Compile Include="Assets\ModelBlocks\SeqVModelBlock.cs" />
     <Compile Include="Assets\ModelBlocks\TxtVModelBlock.cs" />

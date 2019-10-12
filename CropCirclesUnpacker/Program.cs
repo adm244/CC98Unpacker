@@ -16,9 +16,9 @@ namespace CropCirclesUnpacker
       //string palettePath = args[1];
       /*string fontPath = args[1];*/
 
-      Model model = ModelStorage.LoadFromFile(filePath);
+      //Model model = ModelStorage.LoadFromFile(filePath);
 
-      /*List<Model> models = new List<Model>();
+      List<Model> models = new List<Model>();
       string[] files = Directory.GetFiles(filePath);
       for (int i = 0; i < files.Length; ++i)
       {
@@ -30,7 +30,7 @@ namespace CropCirclesUnpacker
           models.Add(model);
       }
 
-      int end = 0;*/
+      int end = 0;
 
       // menu.dat extraction
       /*MediaStorage media = MediaStorage.ReadFromFile(palettePath);

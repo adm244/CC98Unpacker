@@ -8,7 +8,12 @@ namespace CropCirclesUnpacker.Assets.ModelBlocks
     private string Name;
 
     public PScnModelBlock()
-      : base(BlockType.PScn)
+      : this(BlockType.PScn)
+    {
+    }
+
+    protected PScnModelBlock(BlockType type)
+      : base(type)
     {
       Name = string.Empty;
     }
