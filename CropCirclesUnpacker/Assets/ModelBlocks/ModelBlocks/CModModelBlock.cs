@@ -2,7 +2,7 @@
 using CropCirclesUnpacker.Assets.ModelBlocks;
 using CropCirclesUnpacker.Extensions;
 
-namespace CropCirclesUnpacker.Assets.ModelBlocks
+namespace CropCirclesUnpacker.Assets.ModelBlocks.ModelBlocks
 {
   public class CModModelBlock : ModelBlock
   {

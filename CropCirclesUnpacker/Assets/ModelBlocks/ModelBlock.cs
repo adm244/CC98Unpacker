@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using CropCirclesUnpacker.Assets.ModelBlocks.ModelBlocks;
 using CropCirclesUnpacker.Extensions;
 
 namespace CropCirclesUnpacker.Assets.ModelBlocks

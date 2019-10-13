@@ -2,7 +2,7 @@
 using System.IO;
 using CropCirclesUnpacker.Assets.ModelBlocks;
 
-namespace CropCirclesUnpacker.Assets.ModelBlocks
+namespace CropCirclesUnpacker.Assets.ModelBlocks.ModelBlocks
 {
   public class BaseModelBlock : ModelBlock
   {

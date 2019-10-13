@@ -2,7 +2,7 @@
 using System.IO;
 using CropCirclesUnpacker.Extensions;
 
-namespace CropCirclesUnpacker.Assets.ModelBlocks
+namespace CropCirclesUnpacker.Assets.ModelBlocks.ModelBlocks
 {
   public class TxtVModelBlock : BaseModelBlock
   {

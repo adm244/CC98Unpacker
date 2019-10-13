@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace CropCirclesUnpacker.Assets.ModelBlocks
+namespace CropCirclesUnpacker.Assets.ModelBlocks.ModelBlocks
 {
   public class GLstModelBlock : GEdtModelBlock
   {

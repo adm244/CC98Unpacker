@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CropCirclesUnpacker.Assets.ModelBlocks
+namespace CropCirclesUnpacker.Assets.ModelBlocks.ModelBlocks
 {
   public class GChkModelBlock : GEdtModelBlock
   {

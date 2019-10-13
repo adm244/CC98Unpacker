@@ -1,19 +1,15 @@
 ﻿using System.IO;
+using CropCirclesUnpacker.Assets.ModelBlocks;
 using CropCirclesUnpacker.Extensions;
 
-namespace CropCirclesUnpacker.Assets.ModelBlocks
+namespace CropCirclesUnpacker.Assets.ModelBlocks.ModelBlocks
 {
-  public class PScnModelBlock : ScenModelBlock
+  public class BrnModelBlock : ModelBlock
   {
     private string Name;
 
-    public PScnModelBlock()
-      : this(BlockType.PScn)
-    {
-    }
-
-    protected PScnModelBlock(BlockType type)
-      : base(type)
+    public BrnModelBlock()
+      : base(BlockType.Brn_)
     {
       Name = string.Empty;
     }
