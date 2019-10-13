@@ -44,7 +44,7 @@ namespace CropCirclesUnpacker.Assets.ModelBlocks
       string typeName = inputReader.ReadUInt32AsString();
       if (!Enum.IsDefined(typeof(BlockType), typeName))
       {
-        Debug.Assert(false, "Undefined block encountered!");
+        Trace.Assert(false, "Undefined block encountered!");
         return null;
       }
 
@@ -67,7 +67,7 @@ namespace CropCirclesUnpacker.Assets.ModelBlocks
       return block;
     }
 
-    public bool ParseSubBlock(BinaryReader inputReader)
+    public bool ParseSubBlocks(BinaryReader inputReader)
     {
       bool continueParsing = false;
       do
@@ -75,7 +75,7 @@ namespace CropCirclesUnpacker.Assets.ModelBlocks
         string subBlockTypeName = inputReader.ReadUInt32AsString();
         if (!Enum.IsDefined(typeof(SubBlockType), subBlockTypeName))
         {
-          Debug.Assert(false, "Undefined sub block type encountered!");
+          Trace.Assert(false, "Undefined sub block type encountered!");
           return false;
         }
 
@@ -92,8 +92,8 @@ namespace CropCirclesUnpacker.Assets.ModelBlocks
             break;
 
           default:
-            Debug.Assert(false, "Unimplemented sub block type!");
-            break;
+            Trace.Assert(false, "Unimplemented sub block type!");
+            return false;
         }
       } while (continueParsing);
 

@@ -100,7 +100,7 @@ namespace CropCirclesUnpacker.Assets.ModelBlocks
             break;
 
           default:
-            Debug.Assert(false, "Unimplemented data block type!");
+            Trace.Assert(false, "Unimplemented data block type!");
             break;
         }
       } while (continueParsing);

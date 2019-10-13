@@ -27,7 +27,7 @@ namespace CropCirclesUnpacker.Assets.ModelBlocks
       if (Blocks.Length <= 0)
         return false;
 
-      if (!ParseSubBlock(inputReader))
+      if (!ParseSubBlocks(inputReader))
         return false;
 
       Name = inputReader.ReadUInt32AsString();

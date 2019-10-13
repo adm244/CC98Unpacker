@@ -19,7 +19,7 @@ namespace CropCirclesUnpacker.Assets.ModelBlocks
       if (!base.Parse(inputReader))
         return false;
 
-      if (!ParseSubBlock(inputReader))
+      if (!ParseSubBlocks(inputReader))
         return false;
 
       return true;
