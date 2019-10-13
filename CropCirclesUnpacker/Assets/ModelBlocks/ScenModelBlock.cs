@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
 
 namespace CropCirclesUnpacker.Assets.ModelBlocks
@@ -7,7 +6,7 @@ namespace CropCirclesUnpacker.Assets.ModelBlocks
   public class ScenModelBlock : CplxModelBlock
   {
     private Int32 Unk01;
-    private Int32 Unk02;
+    private ExtraBlock[] ExtraBlocks;
 
     private ScenModelBlock()
     {
@@ -18,6 +17,7 @@ namespace CropCirclesUnpacker.Assets.ModelBlocks
       : base(type)
     {
       Unk01 = default(Int32);
+      ExtraBlocks = new ExtraBlock[0];
     }
 
     public override bool Parse(BinaryReader inputReader)
@@ -26,15 +26,7 @@ namespace CropCirclesUnpacker.Assets.ModelBlocks
         return false;
 
       Unk01 = inputReader.ReadInt32();
-      Unk02 = inputReader.ReadInt32();
-      if (Unk02 != 0)
-      {
-        Trace.Assert(false, "Value of Unk02 in Scen block is not zero!\n"
-          + "Filename: " + ((FileStream)inputReader.BaseStream).Name);
-        return false;
-      }
-
-      //TODO(adm244): implement parsing properly if there's a file that use Unk02 != 0
+      ExtraBlocks = ExtraBlock.ParseExtraBlocks(inputReader);
 
       return true;
     }

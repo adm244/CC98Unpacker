@@ -48,6 +48,9 @@
     <Compile Include="Assets\Model.cs" />
     <Compile Include="Assets\ModelBlocks\BaseModelBlock.cs" />
     <Compile Include="Assets\ModelBlocks\BmpVModelBlock.cs" />
+    <Compile Include="Assets\ModelBlocks\ExtraBlock.cs" />
+    <Compile Include="Assets\ModelBlocks\ExtraBlocks\ConMExtraBlock.cs" />
+    <Compile Include="Assets\ModelBlocks\ExtraBlocks\TVExtraBlock.cs" />
     <Compile Include="Assets\ModelBlocks\GButModelBlock.cs" />
     <Compile Include="Assets\ModelBlocks\GChkModelBlock.cs" />
     <Compile Include="Assets\ModelBlocks\GEdtModelBlock.cs" />
@@ -82,6 +85,7 @@
     <Compile Include="Storages\Resources\PaletteStorage.cs" />
     <Compile Include="Utils\StringUtils.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
