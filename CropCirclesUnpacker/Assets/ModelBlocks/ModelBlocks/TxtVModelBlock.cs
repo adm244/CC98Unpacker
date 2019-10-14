@@ -12,7 +12,12 @@ namespace CropCirclesUnpacker.Assets.ModelBlocks.ModelBlocks
     private Int32 Unk03;
     private Int32 Unk04;
     private Int32 Unk05;
-    private string Text;
+
+    public string Text
+    {
+      get;
+      private set;
+    }
 
     public TxtVModelBlock()
       : base(BlockType.TxtV)

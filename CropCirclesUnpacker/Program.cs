@@ -5,6 +5,9 @@ using CropCirclesUnpacker.Assets;
 using CropCirclesUnpacker.Storages;
 using CropCirclesUnpacker.Storages.Resources;
 using System.Collections.Generic;
+using System.Text;
+using CropCirclesUnpacker.Assets.ModelBlocks;
+using CropCirclesUnpacker.Assets.ModelBlocks.ModelBlocks;
 
 namespace CropCirclesUnpacker
 {
@@ -30,7 +33,31 @@ namespace CropCirclesUnpacker
           models.Add(model);
       }
 
-      int end = 0;
+      //int end = 0;
+
+      List<string> lines = new List<string>();
+      for (int i = 0; i < models.Count; ++i)
+      {
+        ModelBlock[] blocks = models[i].Blocks;
+        for (int j = 0; j < blocks.Length; ++j)
+        {
+          List<ModelBlock> subBlocks = blocks[j].SubBlocks;
+          for (int k = 0; k < subBlocks.Count; ++k)
+          {
+            if (subBlocks[k].Type != ModelBlock.BlockType.TxtV)
+              continue;
+
+            string text = ((TxtVModelBlock)subBlocks[k]).Text;
+            if (!string.IsNullOrEmpty(text))
+            {
+              text = text.Replace("\n", "\\n");
+              lines.Add(text);
+            }
+          }
+        }
+      }
+
+      File.WriteAllLines("extracted_text.txt", lines.ToArray());
 
       // menu.dat extraction
       /*MediaStorage media = MediaStorage.ReadFromFile(palettePath);

@@ -9,9 +9,15 @@ namespace CropCirclesUnpacker.Assets.ModelBlocks
 {
   public class ModelBlock
   {
-    protected List<ModelBlock> SubBlocks;
+    //protected List<ModelBlock> SubBlocks;
     protected string ContentName;
     protected uint Flags;
+
+    public List<ModelBlock> SubBlocks
+    {
+      get;
+      private set;
+    }
 
     public BlockType Type
     {

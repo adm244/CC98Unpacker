@@ -4,7 +4,11 @@ namespace CropCirclesUnpacker.Assets
 {
   public class Model : Asset
   {
-    private ModelBlock[] Blocks = null;
+    public ModelBlock[] Blocks
+    {
+      get;
+      private set;
+    }
 
     public Model(string name, ModelBlock[] blocks)
       : base(name, AssetType.Model)
