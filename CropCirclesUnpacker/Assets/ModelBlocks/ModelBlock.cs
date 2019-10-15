@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Text;
 using CropCirclesUnpacker.Assets.ModelBlocks.ModelBlocks;
 using CropCirclesUnpacker.Extensions;
 
@@ -9,7 +10,8 @@ namespace CropCirclesUnpacker.Assets.ModelBlocks
 {
   public class ModelBlock
   {
-    //protected List<ModelBlock> SubBlocks;
+    public static Encoding Encoding = Encoding.GetEncoding(1251);
+
     protected string ContentName;
     protected uint Flags;
 
@@ -46,6 +48,15 @@ namespace CropCirclesUnpacker.Assets.ModelBlocks
       return true;
     }
 
+    public virtual bool Write(BinaryWriter outputWriter)
+    {
+      outputWriter.WriteStringAsUInt32(Type.ToString());
+      outputWriter.WriteStringAsUInt32(ContentName);
+      outputWriter.Write((UInt32)Flags);
+
+      return true;
+    }
+
     public static ModelBlock ParseBlock(BinaryReader inputReader)
     {
       string typeName = inputReader.ReadUInt32AsString();
@@ -74,7 +85,7 @@ namespace CropCirclesUnpacker.Assets.ModelBlocks
       return block;
     }
 
-    public bool ParseSubBlocks(BinaryReader inputReader)
+    protected bool ParseSubBlocks(BinaryReader inputReader)
     {
       bool continueParsing = false;
       do
@@ -119,6 +130,22 @@ namespace CropCirclesUnpacker.Assets.ModelBlocks
         return false;
 
       SubBlocks.Add(block);
+      return true;
+    }
+
+    protected bool WriteSubBlocks(BinaryWriter outputWriter)
+    {
+      for (int i = 0; i < SubBlocks.Count; ++i)
+      {
+        if (SubBlocks[i].Type != BlockType.CMod)
+          outputWriter.WriteStringAsUInt32(SubBlockType.CInt.ToString());
+
+        if (!SubBlocks[i].Write(outputWriter))
+          return false;
+      }
+
+      outputWriter.WriteStringAsUInt32(SubBlockType.CEnd.ToString());
+
       return true;
     }
 

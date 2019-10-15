@@ -8,16 +8,5 @@ namespace CropCirclesUnpacker.Assets.ModelBlocks.ModelBlocks
       : base(BlockType.GLst)
     {
     }
-
-    public override bool Parse(BinaryReader inputReader)
-    {
-      if (!base.Parse(inputReader))
-        return false;
-
-      Unk02 *= 0.06666666666666667d;
-      Flags |= 0x8000000C;
-
-      return true;
-    }
   }
 }

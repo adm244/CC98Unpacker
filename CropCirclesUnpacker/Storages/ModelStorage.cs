@@ -17,10 +17,16 @@ namespace CropCirclesUnpacker.Storages
     {
     }
 
-    private ModelStorage(string fileName)
-      : base(fileName)
+    private ModelStorage(string filePath)
+      : base(filePath)
     {
       Blocks = new List<ModelBlock>();
+    }
+
+    private ModelStorage(string filePath, Model model)
+      : this(filePath)
+    {
+      Blocks.AddRange(model.Blocks);
     }
 
     public static Model LoadFromFile(string fileName)
@@ -55,6 +61,39 @@ namespace CropCirclesUnpacker.Storages
       return new Model(name, storage.Blocks.ToArray());
     }
 
+    public static bool SaveToFile(string filePath, Model model)
+    {
+      if (string.IsNullOrEmpty(filePath))
+        return false;
+
+      ModelStorage storage = new ModelStorage(filePath, model);
+      using (FileStream stream = new FileStream(storage.LibraryPath, FileMode.Create))
+      {
+        using (BinaryWriter outputWriter = new BinaryWriter(stream, storage.Encoding))
+        {
+          if (!storage.Write(outputWriter))
+          {
+            Debug.Assert(false, "Cannot write a model file!");
+            return false;
+          }
+        }
+      }
+
+      return true;
+    }
+
+    public static bool SaveToStream(BinaryWriter outputWriter, Model model)
+    {
+      ModelStorage storage = new ModelStorage(string.Empty, model);
+      if (!storage.Write(outputWriter))
+      {
+        Debug.Assert(false, "Cannot write a model file!");
+        return false;
+      }
+
+      return true;
+    }
+
     protected override bool Parse(BinaryReader inputReader)
     {
       if (!base.Parse(inputReader))
@@ -81,6 +120,27 @@ namespace CropCirclesUnpacker.Storages
       }
 
       return (Blocks.Count > 0);
+    }
+
+    protected override bool Write(BinaryWriter outputWriter)
+    {
+      if (!base.Write(outputWriter))
+        return false;
+
+      //NOTE(adm244): do we need to duplicate a header?
+      if (!base.Write(outputWriter))
+        return false;
+
+      for (int i = 0; i < Blocks.Count; ++i)
+      {
+        if (!Blocks[i].Write(outputWriter))
+        {
+          Debug.Assert(false, "Could not write a block!");
+          return false;
+        }
+      }
+
+      return true;
     }
   }
 }

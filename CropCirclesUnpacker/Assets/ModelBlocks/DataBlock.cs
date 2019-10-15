@@ -60,6 +60,26 @@ namespace CropCirclesUnpacker.Assets.ModelBlocks
       return true;
     }
 
+    private bool Write(BinaryWriter outputWriter)
+    {
+      outputWriter.WriteStringAsUInt32(Type.ToString().ToLower());
+      outputWriter.WriteStringAsUInt32(Name);
+
+      for (int i = 0; i < Values.Count; ++i)
+      {
+        outputWriter.Write((Int32)Values[i].Unk01);
+
+        if (Values[i].Unk01 < 0)
+          outputWriter.Write((Int32)Values[i].Unk02);
+        else
+          outputWriter.WriteStringAsUInt32(Values[i].Name);
+      }
+
+      outputWriter.Write((Int32)(-1));
+
+      return true;
+    }
+
     private static DataBlockType GetType(string typeName)
     {
       try
@@ -118,6 +138,19 @@ namespace CropCirclesUnpacker.Assets.ModelBlocks
       }
 
       return block;
+    }
+
+    public static bool WriteBlocks(BinaryWriter outputWriter, DataBlock[] blocks)
+    {
+      for (int i = 0; i < blocks.Length; ++i)
+      {
+        if (!blocks[i].Write(outputWriter))
+          return false;
+      }
+
+      outputWriter.WriteStringAsUInt32(DataBlockType.End_.ToString().ToLower());
+
+      return true;
     }
 
     public struct DataValue

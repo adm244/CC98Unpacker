@@ -22,6 +22,13 @@ namespace CropCirclesUnpacker.Assets.ModelBlocks
 
     public abstract bool Parse(BinaryReader inputReader);
 
+    public virtual bool Write(BinaryWriter outputWriter)
+    {
+      outputWriter.WriteStringAsUInt32(Type.ToString());
+
+      return true;
+    }
+
     public static ExtraBlock[] ParseExtraBlocks(BinaryReader inputReader)
     {
       List<ExtraBlock> blocks = new List<ExtraBlock>();
@@ -50,11 +57,8 @@ namespace CropCirclesUnpacker.Assets.ModelBlocks
               ExtraBlock block = ParseExtraBlock(inputReader, type);
               if (block == null)
                 return new ExtraBlock[0];
-
-              if (type == ExtraBlockType.ConM)
-                blocks.AddRange(((ConMExtraBlock)block).Blocks);
-              else
-                blocks.Add(block);
+              
+              blocks.Add(block);
             }
             break;
 
@@ -80,6 +84,19 @@ namespace CropCirclesUnpacker.Assets.ModelBlocks
         return null;
 
       return block;
+    }
+
+    public static bool WriteExtraBlocks(BinaryWriter outputWriter, ExtraBlock[] blocks)
+    {
+      for (int i = 0; i < blocks.Length; ++i)
+      {
+        if (!blocks[i].Write(outputWriter))
+          return false;
+      }
+
+      outputWriter.Write((Int32)0);
+
+      return true;
     }
 
     private static ExtraBlock CreateExtraBlock(ExtraBlockType type)

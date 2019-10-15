@@ -30,6 +30,14 @@ namespace CropCirclesUnpacker.Storages
       return true;
     }
 
+    protected virtual bool Write(BinaryWriter outputWriter)
+    {
+      outputWriter.Write((Int32)Signature);
+      outputWriter.Write(new char[] { 'b', 'l', '_', '_' });
+
+      return true;
+    }
+
     protected bool IsValidFile(BinaryReader inputReader)
     {
       Int32 signature = inputReader.ReadInt32();

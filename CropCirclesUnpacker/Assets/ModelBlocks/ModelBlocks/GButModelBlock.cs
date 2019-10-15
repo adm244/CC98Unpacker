@@ -27,5 +27,15 @@ namespace CropCirclesUnpacker.Assets.ModelBlocks.ModelBlocks
 
       return true;
     }
+
+    public override bool Write(BinaryWriter outputWriter)
+    {
+      if (!base.Write(outputWriter))
+        return false;
+
+      outputWriter.Write((Int32)Unk01);
+
+      return true;
+    }
   }
 }

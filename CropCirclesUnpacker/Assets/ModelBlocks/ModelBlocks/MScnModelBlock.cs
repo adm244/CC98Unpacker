@@ -50,6 +50,31 @@ namespace CropCirclesUnpacker.Assets.ModelBlocks.ModelBlocks
       return true;
     }
 
+    public override bool Write(BinaryWriter outputWriter)
+    {
+      if (!base.Write(outputWriter))
+        return false;
+
+      outputWriter.Write((Int32)Unk01);
+
+      for (int i = 0; i < Actions.Count; ++i)
+      {
+        outputWriter.WriteStringAsUInt32(Actions[i].ActionName);
+        outputWriter.Write((Int32)Actions[i].Unk02);
+        outputWriter.Write((UInt64)Actions[i].Unk03);
+        outputWriter.Write((UInt64)Actions[i].Unk04);
+        outputWriter.WriteStringAsUInt32(Actions[i].Name);
+        outputWriter.Write((Int32)Actions[i].Unk06);
+        outputWriter.Write((Int32)Actions[i].Unk07);
+        outputWriter.Write((Int32)Actions[i].Unk08);
+        outputWriter.Write((Int32)Actions[i].Unk09);
+      }
+
+      outputWriter.Write((Int32)(-1));
+
+      return true;
+    }
+
     public struct ActionData
     {
       public string ActionName;

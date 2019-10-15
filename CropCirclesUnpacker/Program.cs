@@ -35,7 +35,18 @@ namespace CropCirclesUnpacker
 
       //int end = 0;
 
-      List<string> lines = new List<string>();
+      string folderPath = args[1];
+      Directory.CreateDirectory(folderPath);
+
+      for (int i = 0; i < models.Count; ++i)
+      {
+        string path = Path.Combine(folderPath, models[i].Name + ".mod");
+        ModelStorage.SaveToFile(path, models[i]);
+      }
+
+      int end = 0;
+
+      /*List<string> lines = new List<string>();
       for (int i = 0; i < models.Count; ++i)
       {
         ModelBlock[] blocks = models[i].Blocks;
@@ -57,7 +68,7 @@ namespace CropCirclesUnpacker
         }
       }
 
-      File.WriteAllLines("extracted_text.txt", lines.ToArray());
+      File.WriteAllLines("extracted_text.txt", lines.ToArray());*/
 
       // menu.dat extraction
       /*MediaStorage media = MediaStorage.ReadFromFile(palettePath);
