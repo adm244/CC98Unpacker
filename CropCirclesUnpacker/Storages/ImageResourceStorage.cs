@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using CropCirclesUnpacker.Extensions;
 
 namespace CropCirclesUnpacker.Storages
 {
@@ -78,6 +79,7 @@ namespace CropCirclesUnpacker.Storages
       if (Type == ResourceType.Sprite)
       {
         Pixels = inputReader.ReadBytes(section.Size);
+        Pixels = Decompress(Pixels);
       }
       else
       {
@@ -94,6 +96,38 @@ namespace CropCirclesUnpacker.Storages
       }
 
       return (Pixels != null);
+    }
+
+    private byte[] Decompress(byte[] buffer)
+    {
+      MemoryStream inputStream = new MemoryStream(buffer);
+      BinaryReader inputReader = new BinaryReader(inputStream);
+
+      MemoryStream outputStream = new MemoryStream();
+      BinaryWriter outputWriter = new BinaryWriter(outputStream);
+
+      while (!inputReader.EOF())
+      {
+        byte action = inputReader.ReadByte();
+        byte count = inputReader.ReadByte();
+
+        switch (action)
+        {
+          case 0xFF: // skip
+            outputWriter.WriteBytes(0x0A, count);
+            break;
+          case 0xFE: // read
+            byte[] colors = inputReader.ReadBytes(count);
+            outputWriter.Write(colors);
+            break;
+
+          default:
+            Debug.Assert(false, "Image data is corrupted");
+            break;
+        }
+      }
+
+      return outputStream.ToArray();
     }
 
     protected enum ResourceType

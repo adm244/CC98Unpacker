@@ -26,7 +26,7 @@ namespace CropCirclesUnpacker.Storages.Resources
         return null;
 
       string name = Path.GetFileNameWithoutExtension(filePath);
-      Sprite texture = new Sprite(name, storage.Pixels, storage.Width, storage.Height, true);
+      Sprite texture = new Sprite(name, storage.Pixels, storage.Width, storage.Height);
       return new Font(name, texture, storage.GlythOffsets);
     }
 
@@ -36,7 +36,7 @@ namespace CropCirclesUnpacker.Storages.Resources
       if (!storage.Parse(inputReader))
         return null;
 
-      Sprite texture = new Sprite(name, storage.Pixels, storage.Width, storage.Height, true);
+      Sprite texture = new Sprite(name, storage.Pixels, storage.Width, storage.Height);
       return new Font(name, texture, storage.GlythOffsets);
     }
 

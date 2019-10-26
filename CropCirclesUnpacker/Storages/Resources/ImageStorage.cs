@@ -1,7 +1,5 @@
-﻿using System.Diagnostics;
-using System.IO;
+﻿using System.IO;
 using CropCirclesUnpacker.Assets;
-using CropCirclesUnpacker.Extensions;
 
 namespace CropCirclesUnpacker.Storages.Resources
 {
@@ -28,12 +26,7 @@ namespace CropCirclesUnpacker.Storages.Resources
       if (!storage.Parse(inputReader))
         return null;
 
-      byte[] pixels = storage.Pixels;
-      bool isBackground = (storage.Type == ResourceType.Background);
-      if (!isBackground)
-        pixels = storage.Decompress();
-
-      return new Sprite(name, pixels, storage.Width, storage.Height, isBackground);
+      return new Sprite(name, storage.Pixels, storage.Width, storage.Height);
     }
 
     public static Sprite ReadFromFile(string filePath)
@@ -42,45 +35,8 @@ namespace CropCirclesUnpacker.Storages.Resources
       if (!storage.ParseFile())
         return null;
 
-      byte[] pixels = storage.Pixels;
-      bool isBackground = (storage.Type == ResourceType.Background);
-      if (!isBackground)
-        pixels = storage.Decompress();
-
       string name = Path.GetFileNameWithoutExtension(filePath);
-      return new Sprite(name, pixels, storage.Width, storage.Height, isBackground);
-    }
-
-    private byte[] Decompress()
-    {
-      MemoryStream inputStream = new MemoryStream(Pixels);
-      BinaryReader inputReader = new BinaryReader(inputStream);
-
-      MemoryStream outputStream = new MemoryStream();
-      BinaryWriter outputWriter = new BinaryWriter(outputStream);
-
-      while (!inputReader.EOF())
-      {
-        byte action = inputReader.ReadByte();
-        byte count = inputReader.ReadByte();
-
-        switch (action)
-        {
-          case 0xFF: // skip
-            outputWriter.WriteBytes(0x0A, count);
-            break;
-          case 0xFE: // read
-            byte[] colors = inputReader.ReadBytes(count);
-            outputWriter.Write(colors);
-            break;
-
-          default:
-            Debug.Assert(false, "Image data is corrupted");
-            break;
-        }
-      }
-
-      return outputStream.ToArray();
+      return new Sprite(name, storage.Pixels, storage.Width, storage.Height);
     }
 
     protected override bool ParseSections(BinaryReader inputReader)
