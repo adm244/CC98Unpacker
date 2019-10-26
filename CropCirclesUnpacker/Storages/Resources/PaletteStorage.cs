@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using CropCirclesUnpacker.Assets;
+using CropCirclesUnpacker.Extensions;
 
 namespace CropCirclesUnpacker.Storages.Resources
 {
   public class PaletteStorage : ResourceStorage
   {
-    private Int32[] Colours;
+    private Color[] Colours;
     private byte[] Lookups;
 
     private PaletteStorage()
@@ -18,17 +20,18 @@ namespace CropCirclesUnpacker.Storages.Resources
     private PaletteStorage(string libraryPath)
       : base(libraryPath)
     {
-      Colours = new Int32[0];
+      Colours = new Color[0];
       Lookups = new byte[0];
     }
 
-    public static Palette ReadFromStream(BinaryReader inputReader, string name)
+    private PaletteStorage(string libraryPath, Palette palette)
+      : base(libraryPath)
     {
-      PaletteStorage storage = new PaletteStorage();
-      if (!storage.Parse(inputReader))
-        return null;
+      Colours = new Color[palette.Colours.Length];
+      palette.Colours.CopyTo(Colours, 0);
 
-      return new Palette(name, storage.Colours, storage.Lookups);
+      Lookups = new byte[palette.Lookups.Length];
+      palette.Lookups.CopyTo(Lookups, 0);
     }
 
     public static Palette ReadFromFile(string filePath)
@@ -38,6 +41,15 @@ namespace CropCirclesUnpacker.Storages.Resources
         return null;
 
       string name = Path.GetFileNameWithoutExtension(filePath);
+      return new Palette(name, storage.Colours, storage.Lookups);
+    }
+
+    public static Palette ReadFromStream(BinaryReader inputReader, string name)
+    {
+      PaletteStorage storage = new PaletteStorage();
+      if (!storage.Parse(inputReader))
+        return null;
+
       return new Palette(name, storage.Colours, storage.Lookups);
     }
 
@@ -64,19 +76,21 @@ namespace CropCirclesUnpacker.Storages.Resources
 
     private bool ParseZPALSection(BinaryReader inputReader, int sectionSize)
     {
-      int size = (sectionSize / sizeof(Int32));
+      int count = (sectionSize / sizeof(Int32));
 
-      Colours = new Int32[size];
+      Colours = new Color[count];
       for (int i = 0; i < Colours.Length; ++i)
       {
-        Colours[i] = inputReader.ReadInt32();
+        Int32 value = inputReader.ReadInt32();
+        Colours[i] = ColorExtension.FromABGR(value);
       }
 
-      return true;
+      return (Colours.Length > 0);
     }
 
     private bool ParseLKUPSection(BinaryReader inputReader, int sectionSize)
     {
+      //NOTE(adm244): used in fake font anti-aliasing
       Lookups = inputReader.ReadBytes(sectionSize);
 
       return true;

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using CropCirclesUnpacker.Extensions;
 
@@ -8,12 +7,7 @@ namespace CropCirclesUnpacker.Storages
 {
   public abstract class ResourceStorage : BaseStorage
   {
-    private List<Section> Sections;
-    
-    protected int Width;
-    protected int Height;
-    protected byte[] Pixels;
-    protected ResourceType Type;
+    protected List<Section> Sections;
 
     protected ResourceStorage()
       : this(string.Empty)
@@ -23,12 +17,7 @@ namespace CropCirclesUnpacker.Storages
     protected ResourceStorage(string filePath)
       : base(filePath)
     {
-      Sections = new List<Section>(0);
-
-      Width = 0;
-      Height = 0;
-      Pixels = new byte[0];
-      Type = ResourceType.Unknown;
+      Sections = new List<Section>();
     }
 
     protected abstract bool ParseSection(BinaryReader inputReader, Section section);
@@ -131,7 +120,7 @@ namespace CropCirclesUnpacker.Storages
       return new Section();
     }
 
-    private bool ParseSharedSection(BinaryReader inputReader, SectionType type)
+    protected bool ParseSectionType(BinaryReader inputReader, SectionType type)
     {
       Section section = GetSection(type);
       if (section.IsNull())
@@ -141,76 +130,18 @@ namespace CropCirclesUnpacker.Storages
 
       Console.Write("\t\tParsing {0} section...", section.Type);
 
-      bool result = false;
-      switch (type)
-      {
-        case SectionType.INFO:
-          result = ParseINFOSection(inputReader);
-          break;
-        case SectionType.DATA:
-          result = ParseDATASection(inputReader, section);
-          break;
-
-        default:
-          Debug.Assert(false, "Attempting to parse a non-shared section in a base class.");
-          break;
-      }
-
+      bool result = ParseSection(inputReader, section);
       if (!result)
         Console.WriteLine(" Error.");
       else
         Console.WriteLine(" Done!");
 
-      Sections.Remove(section);
-
       return result;
     }
 
-    private bool ParseINFOSection(BinaryReader inputReader)
-    {
-      Int32 resourceType = inputReader.ReadInt32();
-      if (Enum.IsDefined(typeof(ResourceType), resourceType))
-        Type = (ResourceType)resourceType;
-
-      Width = inputReader.ReadUInt16();
-      Height = inputReader.ReadUInt16();
-
-      //NOTE(adm244): seems like those are never used
-      Int32 unk04 = inputReader.ReadInt32(); // 0x1
-      Int32 unk05 = inputReader.ReadInt32(); // sizeof(DATA)
-
-      return true;
-    }
-
-    private bool ParseDATASection(BinaryReader inputReader, Section section)
-    {
-      if (Type == ResourceType.Sprite)
-      {
-        Pixels = inputReader.ReadBytes(section.Size);
-      }
-      else
-      {
-        Pixels = new byte[Width * Height];
-        for (int y = 0; y < Height; ++y)
-        {
-          byte[] row = inputReader.ReadBytes(Width);
-          row.CopyTo(Pixels, y * Width);
-
-          int padding = (int)(inputReader.BaseStream.Position % 4);
-          if (padding > 0)
-            inputReader.BaseStream.Seek(4 - padding, SeekOrigin.Current);
-        }
-      }
-
-      return (Pixels != null);
-    }
-
-    private bool ParseSections(BinaryReader inputReader)
+    protected virtual bool ParseSections(BinaryReader inputReader)
     {
       Console.WriteLine("\tParsing sections...");
-
-      ParseSharedSection(inputReader, SectionType.INFO);
-      ParseSharedSection(inputReader, SectionType.DATA);
 
       for (int i = 0; i < Sections.Count; ++i)
       {
@@ -245,14 +176,6 @@ namespace CropCirclesUnpacker.Storages
       OFFI,
       ZPAL,
       LKUP,
-    }
-
-    protected enum ResourceType
-    {
-      Unknown = -1,
-      Background = 0,
-      Sprite = 1,
-      Font = 2,
     }
 
     protected struct Section

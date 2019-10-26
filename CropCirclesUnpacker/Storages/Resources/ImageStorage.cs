@@ -5,13 +5,13 @@ using CropCirclesUnpacker.Extensions;
 
 namespace CropCirclesUnpacker.Storages.Resources
 {
-  public class ImageStorage : ResourceStorage
+  public class ImageStorage : ImageResourceStorage
   {
     private byte[] OFFI;
     private byte[] OFFS;
 
     private ImageStorage()
-      : base()
+      : this(string.Empty)
     {
     }
 
@@ -28,13 +28,10 @@ namespace CropCirclesUnpacker.Storages.Resources
       if (!storage.Parse(inputReader))
         return null;
 
-      bool isBackground = true;
       byte[] pixels = storage.Pixels;
-      if (storage.Type == ResourceType.Sprite)
-      {
-        isBackground = false;
+      bool isBackground = (storage.Type == ResourceType.Background);
+      if (!isBackground)
         pixels = storage.Decompress();
-      }
 
       return new Sprite(name, pixels, storage.Width, storage.Height, isBackground);
     }
@@ -45,13 +42,10 @@ namespace CropCirclesUnpacker.Storages.Resources
       if (!storage.ParseFile())
         return null;
 
-      bool isBackground = true;
       byte[] pixels = storage.Pixels;
-      if (storage.Type == ResourceType.Sprite)
-      {
-        isBackground = false;
+      bool isBackground = (storage.Type == ResourceType.Background);
+      if (!isBackground)
         pixels = storage.Decompress();
-      }
 
       string name = Path.GetFileNameWithoutExtension(filePath);
       return new Sprite(name, pixels, storage.Width, storage.Height, isBackground);
@@ -89,6 +83,20 @@ namespace CropCirclesUnpacker.Storages.Resources
       return outputStream.ToArray();
     }
 
+    protected override bool ParseSections(BinaryReader inputReader)
+    {
+      if (!base.ParseSections(inputReader))
+        return false;
+
+      if (!ParseSectionType(inputReader, SectionType.OFFS))
+        return false;
+
+      if (!ParseSectionType(inputReader, SectionType.OFFI))
+        return false;
+
+      return true;
+    }
+
     protected override bool ParseSection(BinaryReader inputReader, Section section)
     {
       bool result = false;
@@ -103,7 +111,7 @@ namespace CropCirclesUnpacker.Storages.Resources
           break;
 
         default:
-          Debug.Assert(false, "Section is not implemented");
+          result = base.ParseSection(inputReader, section);
           break;
       }
 

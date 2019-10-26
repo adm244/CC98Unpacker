@@ -288,7 +288,7 @@ namespace CropCirclesUnpackerGUI
         }
 
         Palette palette = GetSelectedPalette();
-        if (!palette.Entries.AreEqual(bitmap.Palette.Entries))
+        if (!palette.Colours.AreEqual(bitmap.Palette.Entries))
         {
           if (MessageBox.Show(this, "Bitmap palette differs from currently selected. Continue to import?", "Palettes are not equal",
             MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)

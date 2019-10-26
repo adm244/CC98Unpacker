@@ -1,13 +1,5 @@
-﻿using System.Drawing;
-using System.Drawing.Imaging;
-using System.IO;
-using CropCirclesUnpacker.Assets;
-using CropCirclesUnpacker.Storages;
+﻿using CropCirclesUnpacker.Assets;
 using CropCirclesUnpacker.Storages.Resources;
-using System.Collections.Generic;
-using System.Text;
-using CropCirclesUnpacker.Assets.ModelBlocks;
-using CropCirclesUnpacker.Assets.ModelBlocks.ModelBlocks;
 
 namespace CropCirclesUnpacker
 {
@@ -21,7 +13,7 @@ namespace CropCirclesUnpacker
 
       //Model model = ModelStorage.LoadFromFile(filePath);
 
-      List<Model> models = new List<Model>();
+      /*List<Model> models = new List<Model>();
       string[] files = Directory.GetFiles(filePath);
       for (int i = 0; i < files.Length; ++i)
       {
@@ -44,7 +36,7 @@ namespace CropCirclesUnpacker
         ModelStorage.SaveToFile(path, models[i]);
       }
 
-      int end = 0;
+      int end = 0;*/
 
       /*List<string> lines = new List<string>();
       for (int i = 0; i < models.Count; ++i)
@@ -79,10 +71,15 @@ namespace CropCirclesUnpacker
       media.ExtractTo(Environment.CurrentDirectory);*/
 
       // clr parsing
-      //Palette palette = PaletteStorage.ReadFromFile(palettePath);
+      //Palette palette = PaletteStorage.ReadFromFile(filePath);
+
+      //PaletteStorage.SaveToFile(filePath + ".new.clr", palette);
 
       // zft parsing
-      //Font font = FontStorage.ReadFromFile(fontPath, palette);
+      //Font font = FontStorage.ReadFromFile(filePath);
+
+      // zim parsing
+      //Sprite sprite = ImageStorage.ReadFromFile(filePath);
 
       /*for (int ii = 0; ii < (palette.Lookups.Length / palette.Entries.Length); ++ii)
       {

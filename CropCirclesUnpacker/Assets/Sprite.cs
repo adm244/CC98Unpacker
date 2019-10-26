@@ -28,7 +28,7 @@ namespace CropCirclesUnpacker.Assets
     {
       Bitmap bitmap = new Bitmap(Width, Height, Format);
       bitmap.SetPixels(Pixels);
-      bitmap.SetPalette(palette.Entries);
+      bitmap.SetPalette(palette.Colours);
 
       return bitmap;
     }

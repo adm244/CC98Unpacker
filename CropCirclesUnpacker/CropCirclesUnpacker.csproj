@@ -74,7 +74,9 @@
     <Compile Include="Extensions\BinaryReaderExtension.cs" />
     <Compile Include="Extensions\BinaryWriterExtension.cs" />
     <Compile Include="Extensions\BitmapExtension.cs" />
+    <Compile Include="Extensions\ColorExtension.cs" />
     <Compile Include="Storages\BaseStorage.cs" />
+    <Compile Include="Storages\ImageResourceStorage.cs" />
     <Compile Include="Storages\ModelStorage.cs" />
     <Compile Include="Storages\ResourceStorage.cs" />
     <Compile Include="Storages\Resources\FontStorage.cs" />
