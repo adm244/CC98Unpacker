@@ -173,7 +173,7 @@ namespace CropCirclesUnpacker.Storages
             {
               case ".clr":
                 {
-                  Palette palette = PaletteStorage.ReadFromStream(resourceStream, AssetsInfo[i].Name);
+                  Palette palette = PaletteStorage.LoadFromStream(resourceStream, AssetsInfo[i].Name);
                   if (palette == null)
                     Debug.Assert(false, "Could not read a palette data from a stream");
                   else

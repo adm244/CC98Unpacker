@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using CropCirclesUnpacker.Extensions;
+using System.Diagnostics;
 
 namespace CropCirclesUnpacker.Storages
 {
@@ -21,21 +22,7 @@ namespace CropCirclesUnpacker.Storages
     }
 
     protected abstract bool ParseSection(BinaryReader inputReader, Section section);
-
-    protected bool ParseFile()
-    {
-      bool result = false;
-
-      using (FileStream inputStream = new FileStream(LibraryPath, FileMode.Open))
-      {
-        using (BinaryReader inputReader = new BinaryReader(inputStream, Encoding))
-        {
-          result = Parse(inputReader);
-        }
-      }
-
-      return result;
-    }
+    protected abstract bool WriteSection(BinaryWriter outputWriter, SectionType type);
 
     protected override bool Parse(BinaryReader inputReader)
     {
@@ -55,6 +42,20 @@ namespace CropCirclesUnpacker.Storages
       Console.WriteLine("Done!");
 
       return result;
+    }
+
+    protected virtual bool Write(BinaryWriter outputWriter, SectionType[] types)
+    {
+      if (!base.Write(outputWriter))
+        return false;
+
+      if (!WriteSections(outputWriter, types))
+        return false;
+
+      if (!WriteSectionsTable(outputWriter))
+        return false;
+
+      return true;
     }
 
     private bool ParseSectionsTable(BinaryReader inputReader)
@@ -93,6 +94,30 @@ namespace CropCirclesUnpacker.Storages
       while (!currentSection.IsNull());
 
       Console.WriteLine("\tDone!");
+
+      return true;
+    }
+
+    private bool WriteSectionsTable(BinaryWriter outputWriter)
+    {
+      for (int i = 0; i < Sections.Count; ++i)
+      {
+        if (Sections[i].IsNull())
+        {
+          Debug.Assert(false, "Attempting to write an empty section!");
+          return false;
+        }
+
+        string name = Sections[i].Type.ToString();
+        Debug.Assert(name.Length == 4, "Section type name MUST be 4 characters long!");
+
+        outputWriter.WriteFixedString(name, System.Text.Encoding.ASCII);
+        outputWriter.Write((Int32)Sections[i].Size);
+        outputWriter.Write((Int32)Sections[i].Offset);
+      }
+
+      //NOTE(adm244): write null section
+      outputWriter.WriteBytes(0, sizeof(Int32) * 3);
 
       return true;
     }
@@ -155,6 +180,7 @@ namespace CropCirclesUnpacker.Storages
 
         Console.Write("\t\tParsing {0} section...", Sections[i].Type);
 
+        //FIX(adm244): return false on error?
         if (!ParseSection(inputReader, Sections[i]))
           Console.WriteLine(" Error.");
         else
@@ -162,6 +188,30 @@ namespace CropCirclesUnpacker.Storages
       }
 
       Console.WriteLine("\tDone!");
+
+      return true;
+    }
+
+    protected virtual bool WriteSections(BinaryWriter outputWriter, SectionType[] types)
+    {
+      for (int i = 0; i < types.Length; ++i)
+      {
+        long start = outputWriter.BaseStream.Position;
+
+        if (!WriteSection(outputWriter, types[i]))
+          return false;
+
+        long end = outputWriter.BaseStream.Position;
+
+        int offset = (int)start;
+        int size = (int)(end - start);
+
+        Debug.Assert(offset > 0);
+        Debug.Assert(size > 0);
+
+        Section section = new Section(types[i], offset, size);
+        Sections.Add(section);
+      }
 
       return true;
     }

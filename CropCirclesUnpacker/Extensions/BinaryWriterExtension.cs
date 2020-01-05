@@ -38,11 +38,15 @@ namespace CropCirclesUnpacker.Extensions
       }
     }
 
-    public static void WriteCString(this BinaryWriter writer, string value, Encoding encoding)
+    public static void WriteFixedString(this BinaryWriter writer, string value, Encoding encoding)
     {
       byte[] stringBytes = encoding.GetBytes(value);
-
       writer.Write(stringBytes);
+    }
+
+    public static void WriteCString(this BinaryWriter writer, string value, Encoding encoding)
+    {
+      writer.WriteFixedString(value, encoding);
       writer.Write((byte)0);
     }
   }

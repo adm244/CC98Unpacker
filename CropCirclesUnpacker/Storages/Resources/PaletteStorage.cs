@@ -34,23 +34,60 @@ namespace CropCirclesUnpacker.Storages.Resources
       palette.Lookups.CopyTo(Lookups, 0);
     }
 
-    public static Palette ReadFromFile(string filePath)
+    public static Palette LoadFromFile(string filePath)
     {
       PaletteStorage storage = new PaletteStorage(filePath);
-      if (!storage.ParseFile())
-        return null;
+      using (FileStream inputStream = new FileStream(storage.LibraryPath, FileMode.Open))
+      {
+        using (BinaryReader inputReader = new BinaryReader(inputStream, storage.Encoding))
+        {
+          if (!storage.Parse(inputReader))
+          {
+            Debug.Assert(false, "Cannot parse a palette file!");
+            return null;
+          }
+        }
+      }
 
       string name = Path.GetFileNameWithoutExtension(filePath);
       return new Palette(name, storage.Colours, storage.Lookups);
     }
 
-    public static Palette ReadFromStream(BinaryReader inputReader, string name)
+    public static Palette LoadFromStream(BinaryReader inputReader, string name)
     {
       PaletteStorage storage = new PaletteStorage();
       if (!storage.Parse(inputReader))
+      {
+        Debug.Assert(false, "Cannot parse a palette file!");
         return null;
+      }
 
       return new Palette(name, storage.Colours, storage.Lookups);
+    }
+
+    public static bool SaveToStream(BinaryWriter outputWriter, Palette palette)
+    {
+      PaletteStorage storage = new PaletteStorage(string.Empty, palette);
+      if (!storage.Write(outputWriter))
+      {
+        Debug.Assert(false, "Cannot write a palette file!");
+        return false;
+      }
+
+      return true;
+    }
+
+    protected override bool Write(BinaryWriter outputWriter)
+    {
+      SectionType[] types = new SectionType[] {
+        SectionType.ZPAL,
+        SectionType.LKUP
+      };
+
+      if (!base.Write(outputWriter, types))
+        return false;
+
+      return true;
     }
 
     protected override bool ParseSection(BinaryReader inputReader, Section section)
@@ -74,6 +111,27 @@ namespace CropCirclesUnpacker.Storages.Resources
       return result;
     }
 
+    protected override bool WriteSection(BinaryWriter outputWriter, SectionType type)
+    {
+      bool result = false;
+
+      switch (type)
+      {
+        case SectionType.ZPAL:
+          result = WriteZPalSection(outputWriter);
+          break;
+        case SectionType.LKUP:
+          result = WriteLKUPSection(outputWriter);
+          break;
+
+        default:
+          Debug.Assert(false, "Section is not implemented!");
+          break;
+      }
+
+      return result;
+    }
+
     private bool ParseZPALSection(BinaryReader inputReader, int sectionSize)
     {
       int count = (sectionSize / sizeof(Int32));
@@ -88,12 +146,22 @@ namespace CropCirclesUnpacker.Storages.Resources
       return (Colours.Length > 0);
     }
 
+    private bool WriteZPalSection(BinaryWriter outputWriter)
+    {
+      throw new NotImplementedException();
+    }
+
     private bool ParseLKUPSection(BinaryReader inputReader, int sectionSize)
     {
       //NOTE(adm244): used in fake font anti-aliasing
       Lookups = inputReader.ReadBytes(sectionSize);
 
       return true;
+    }
+
+    private bool WriteLKUPSection(BinaryWriter outputWriter)
+    {
+      throw new NotImplementedException();
     }
   }
 }

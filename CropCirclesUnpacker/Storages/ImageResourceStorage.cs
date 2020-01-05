@@ -5,7 +5,7 @@ using CropCirclesUnpacker.Extensions;
 
 namespace CropCirclesUnpacker.Storages
 {
-  public class ImageResourceStorage : ResourceStorage
+  public abstract class ImageResourceStorage : ResourceStorage
   {
     protected int Width;
     protected int Height;
@@ -114,6 +114,7 @@ namespace CropCirclesUnpacker.Storages
         switch (action)
         {
           case 0xFF: // skip
+            //FIX(adm244): replace 0x0A by clear color constant
             outputWriter.WriteBytes(0x0A, count);
             break;
           case 0xFE: // read

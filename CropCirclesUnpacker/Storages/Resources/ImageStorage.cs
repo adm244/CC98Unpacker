@@ -32,8 +32,14 @@ namespace CropCirclesUnpacker.Storages.Resources
     public static Sprite ReadFromFile(string filePath)
     {
       ImageStorage storage = new ImageStorage(filePath);
-      if (!storage.ParseFile())
-        return null;
+      using (FileStream inputStream = new FileStream(storage.LibraryPath, FileMode.Open, FileAccess.Read))
+      {
+        using (BinaryReader inputReader = new BinaryReader(inputStream, storage.Encoding))
+        {
+          if (!storage.Parse(inputReader))
+            return null;
+        }
+      }
 
       string name = Path.GetFileNameWithoutExtension(filePath);
       return new Sprite(name, storage.Pixels, storage.Width, storage.Height);
@@ -72,6 +78,11 @@ namespace CropCirclesUnpacker.Storages.Resources
       }
 
       return result;
+    }
+
+    protected override bool WriteSection(BinaryWriter outputWriter, ResourceStorage.SectionType type)
+    {
+      throw new System.NotImplementedException();
     }
 
     private bool ParseOFFSSection(BinaryReader inputReader, Section section)
