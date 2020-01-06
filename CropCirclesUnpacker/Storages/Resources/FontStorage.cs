@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using CropCirclesUnpacker.Assets;
 
@@ -19,7 +20,14 @@ namespace CropCirclesUnpacker.Storages.Resources
       GlythOffsets = new Font.GlythOffset[0];
     }
 
-    public static Font ReadFromFile(string filePath)
+    private FontStorage(string libraryPath, Font font)
+      : base(libraryPath, font.Texture, ResourceType.Font)
+    {
+      GlythOffsets = new Font.GlythOffset[font.Offsets.Length];
+      font.Offsets.CopyTo(GlythOffsets, 0);
+    }
+
+    public static Font LoadFromFile(string filePath)
     {
       FontStorage storage = new FontStorage(filePath);
       using (FileStream inputStream = new FileStream(storage.LibraryPath, FileMode.Open, FileAccess.Read))
@@ -27,7 +35,10 @@ namespace CropCirclesUnpacker.Storages.Resources
         using (BinaryReader inputReader = new BinaryReader(inputStream, storage.Encoding))
         {
           if (!storage.Parse(inputReader))
+          {
+            Debug.Assert(false, "Cannot read a font file!");
             return null;
+          }
         }
       }
 
@@ -36,14 +47,62 @@ namespace CropCirclesUnpacker.Storages.Resources
       return new Font(name, texture, storage.GlythOffsets);
     }
 
-    public static Font ReadFromStream(BinaryReader inputReader, string name)
+    public static bool SaveToFile(string filePath, Font font)
+    {
+      FontStorage storage = new FontStorage(filePath, font);
+      using (FileStream outputStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+      {
+        using (BinaryWriter outputWriter = new BinaryWriter(outputStream, storage.Encoding))
+        {
+          if (!storage.Write(outputWriter))
+          {
+            Debug.Assert(false, "Cannot write a font file!");
+            return false;
+          }
+        }
+      }
+
+      return true;
+    }
+
+    public static Font LoadFromStream(BinaryReader inputReader, string name)
     {
       FontStorage storage = new FontStorage();
       if (!storage.Parse(inputReader))
+      {
+        Debug.Assert(false, "Cannot read a font file!");
         return null;
+      }
 
       Sprite texture = new Sprite(name, storage.Pixels, storage.Width, storage.Height);
       return new Font(name, texture, storage.GlythOffsets);
+    }
+
+    public static bool SaveToStream(BinaryWriter outputWriter, Font font)
+    {
+      FontStorage storage = new FontStorage(string.Empty, font);
+      if (!storage.Write(outputWriter))
+      {
+        Debug.Assert(false, "Cannot write a font file!");
+        return false;
+      }
+
+      return true;
+    }
+
+    protected override bool Write(BinaryWriter outputWriter)
+    {
+      SectionType[] types = new SectionType[] {
+        SectionType.INFO,
+        SectionType.DATA,
+        SectionType.NUMO,
+        SectionType.OFFS
+      };
+
+      if (!base.Write(outputWriter, types))
+        return false;
+
+      return true;
     }
 
     protected override bool ParseSections(BinaryReader inputReader)
@@ -81,9 +140,25 @@ namespace CropCirclesUnpacker.Storages.Resources
       return result;
     }
 
-    protected override bool WriteSection(BinaryWriter outputWriter, ResourceStorage.SectionType type)
+    protected override bool WriteSection(BinaryWriter outputWriter, SectionType type)
     {
-      throw new NotImplementedException();
+      bool result = false;
+
+      switch (type)
+      {
+        case SectionType.NUMO:
+          result = WriteNUMOSection(outputWriter);
+          break;
+        case SectionType.OFFS:
+          result = WriteOFFSSection(outputWriter);
+          break;
+
+        default:
+          result = base.WriteSection(outputWriter, type);
+          break;
+      }
+
+      return result;
     }
 
     private bool ParseNUMOSection(BinaryReader inputReader)
@@ -94,12 +169,31 @@ namespace CropCirclesUnpacker.Storages.Resources
       return true;
     }
 
+    private bool WriteNUMOSection(BinaryWriter outputWriter)
+    {
+      outputWriter.Write((Int32)GlythOffsets.Length);
+
+      return true;
+    }
+
     private bool ParseOFFSSection(BinaryReader inputReader)
     {
+      //FIX(adm244): check section size
       for (int i = 0; i < GlythOffsets.Length; ++i)
       {
         GlythOffsets[i].Left = inputReader.ReadInt32();
         GlythOffsets[i].Right = inputReader.ReadInt32();
+      }
+
+      return true;
+    }
+
+    private bool WriteOFFSSection(BinaryWriter outputWriter)
+    {
+      for (int i = 0; i < GlythOffsets.Length; ++i)
+      {
+        outputWriter.Write((Int32)GlythOffsets[i].Left);
+        outputWriter.Write((Int32)GlythOffsets[i].Right);
       }
 
       return true;

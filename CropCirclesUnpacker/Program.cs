@@ -71,11 +71,12 @@ namespace CropCirclesUnpacker
       media.ExtractTo(Environment.CurrentDirectory);*/
 
       // clr parsing
-      Palette palette = PaletteStorage.LoadFromFile(filePath);
-      PaletteStorage.SaveToFile(filePath + ".new.clr", palette);
+      //Palette palette = PaletteStorage.LoadFromFile(filePath);
+      //PaletteStorage.SaveToFile(filePath + ".new.clr", palette);
 
       // zft parsing
-      //Font font = FontStorage.ReadFromFile(filePath);
+      Font font = FontStorage.LoadFromFile(filePath);
+      FontStorage.SaveToFile(filePath + ".new.zft", font);
 
       // zim parsing
       //Sprite sprite = ImageStorage.ReadFromFile(filePath);

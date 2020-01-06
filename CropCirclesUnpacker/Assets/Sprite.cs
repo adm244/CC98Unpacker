@@ -8,7 +8,6 @@ namespace CropCirclesUnpacker.Assets
   public class Sprite : Asset
   {
     private PixelFormat Format = PixelFormat.Format8bppIndexed;
-    private byte[] Pixels;
 
     public Sprite(string name, byte[] pixels, int width, int height)
       : base(name, AssetType.Sprite)
@@ -51,6 +50,12 @@ namespace CropCirclesUnpacker.Assets
     }
 
     public int Height
+    {
+      get;
+      private set;
+    }
+
+    public byte[] Pixels
     {
       get;
       private set;

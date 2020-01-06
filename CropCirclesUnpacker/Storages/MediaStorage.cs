@@ -192,7 +192,7 @@ namespace CropCirclesUnpacker.Storages
                 break;
               case ".zft":
                 {
-                  Font font = FontStorage.ReadFromStream(resourceStream, AssetsInfo[i].Name);
+                  Font font = FontStorage.LoadFromStream(resourceStream, AssetsInfo[i].Name);
                   if (font == null)
                     Debug.Assert(false, "Could not read a font data from a stream");
                   else

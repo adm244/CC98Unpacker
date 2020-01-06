@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using CropCirclesUnpacker.Extensions;
-using System.Diagnostics;
 
 namespace CropCirclesUnpacker.Storages
 {
@@ -122,7 +122,7 @@ namespace CropCirclesUnpacker.Storages
       return tableOffset;
     }
 
-    private Section GetSection(SectionType type)
+    protected Section GetSection(SectionType type)
     {
       for (int i = 0; i < Sections.Count; ++i)
       {
