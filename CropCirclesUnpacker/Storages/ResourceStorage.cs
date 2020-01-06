@@ -154,6 +154,8 @@ namespace CropCirclesUnpacker.Storages
 
     protected virtual bool ParseSections(BinaryReader inputReader)
     {
+      bool parseResult = true;
+
       Console.WriteLine("\tParsing sections...");
 
       for (int i = 0; i < Sections.Count; ++i)
@@ -168,16 +170,18 @@ namespace CropCirclesUnpacker.Storages
 
         Console.Write("\t\tParsing {0} section...", Sections[i].Type);
 
-        //FIX(adm244): return false on error?
-        if (!ParseSection(inputReader, Sections[i]))
+        bool result = ParseSection(inputReader, Sections[i]);
+        if (!result)
           Console.WriteLine(" Error.");
         else
           Console.WriteLine(" Done!");
+        
+        parseResult &= result;
       }
 
       Console.WriteLine("\tDone!");
 
-      return true;
+      return parseResult;
     }
 
     protected virtual bool WriteSections(BinaryWriter outputWriter, SectionType[] types)
