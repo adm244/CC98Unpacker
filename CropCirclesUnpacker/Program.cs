@@ -8,7 +8,7 @@ namespace CropCirclesUnpacker
     public static void Main(string[] args)
     {
       string filePath = args[0];
-      string palettePath = args[1];
+      //string palettePath = args[1];
       /*string fontPath = args[1];*/
 
       //Model model = ModelStorage.LoadFromFile(filePath);
@@ -71,17 +71,16 @@ namespace CropCirclesUnpacker
       media.ExtractTo(Environment.CurrentDirectory);*/
 
       // clr parsing
-      Palette palette = PaletteStorage.ReadFromFile(palettePath);
-
-      //PaletteStorage.SaveToFile(filePath + ".new.clr", palette);
+      Palette palette = PaletteStorage.LoadFromFile(filePath);
+      PaletteStorage.SaveToFile(filePath + ".new.clr", palette);
 
       // zft parsing
       //Font font = FontStorage.ReadFromFile(filePath);
 
       // zim parsing
-      Sprite sprite = ImageStorage.ReadFromFile(filePath);
-      System.Drawing.Bitmap spriteImage = sprite.CreateBitmap(palette);
-      spriteImage.Save("test.bmp", System.Drawing.Imaging.ImageFormat.Bmp);
+      //Sprite sprite = ImageStorage.ReadFromFile(filePath);
+      //System.Drawing.Bitmap spriteImage = sprite.CreateBitmap(palette);
+      //spriteImage.Save("test.bmp", System.Drawing.Imaging.ImageFormat.Bmp);
 
       /*for (int ii = 0; ii < (palette.Lookups.Length / palette.Entries.Length); ++ii)
       {

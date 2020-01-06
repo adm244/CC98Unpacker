@@ -53,6 +53,24 @@ namespace CropCirclesUnpacker.Storages.Resources
       return new Palette(name, storage.Colours, storage.Lookups);
     }
 
+    public static bool SaveToFile(string filePath, Palette palette)
+    {
+      PaletteStorage storage = new PaletteStorage(filePath, palette);
+      using (FileStream outputStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+      {
+        using (BinaryWriter outputWriter = new BinaryWriter(outputStream, storage.Encoding))
+        {
+          if (!storage.Write(outputWriter))
+          {
+            Debug.Assert(false, "Cannot write a palette file!");
+            return false;
+          }
+        }
+      }
+
+      return true;
+    }
+
     public static Palette LoadFromStream(BinaryReader inputReader, string name)
     {
       PaletteStorage storage = new PaletteStorage();
@@ -118,7 +136,7 @@ namespace CropCirclesUnpacker.Storages.Resources
       switch (type)
       {
         case SectionType.ZPAL:
-          result = WriteZPalSection(outputWriter);
+          result = WriteZPALSection(outputWriter);
           break;
         case SectionType.LKUP:
           result = WriteLKUPSection(outputWriter);
@@ -146,9 +164,15 @@ namespace CropCirclesUnpacker.Storages.Resources
       return (Colours.Length > 0);
     }
 
-    private bool WriteZPalSection(BinaryWriter outputWriter)
+    private bool WriteZPALSection(BinaryWriter outputWriter)
     {
-      throw new NotImplementedException();
+      for (int i = 0; i < Colours.Length; ++i)
+      {
+        Int32 value = Colours[i].ToABGR();
+        outputWriter.Write((Int32)value);
+      }
+
+      return true;
     }
 
     private bool ParseLKUPSection(BinaryReader inputReader, int sectionSize)
@@ -161,7 +185,9 @@ namespace CropCirclesUnpacker.Storages.Resources
 
     private bool WriteLKUPSection(BinaryWriter outputWriter)
     {
-      throw new NotImplementedException();
+      outputWriter.Write((byte[])Lookups);
+
+      return true;
     }
   }
 }

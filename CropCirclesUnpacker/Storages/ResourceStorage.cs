@@ -100,24 +100,12 @@ namespace CropCirclesUnpacker.Storages
 
     private bool WriteSectionsTable(BinaryWriter outputWriter)
     {
+      int offset = (int)outputWriter.BaseStream.Position;
       for (int i = 0; i < Sections.Count; ++i)
       {
-        if (Sections[i].IsNull())
-        {
-          Debug.Assert(false, "Attempting to write an empty section!");
-          return false;
-        }
-
-        string name = Sections[i].Type.ToString();
-        Debug.Assert(name.Length == 4, "Section type name MUST be 4 characters long!");
-
-        outputWriter.WriteFixedString(name, System.Text.Encoding.ASCII);
-        outputWriter.Write((Int32)Sections[i].Size);
-        outputWriter.Write((Int32)Sections[i].Offset);
+        Sections[i].Write(outputWriter);
       }
-
-      //NOTE(adm244): write null section
-      outputWriter.WriteBytes(0, sizeof(Int32) * 3);
+      outputWriter.Write((Int32)offset);
 
       return true;
     }
@@ -213,6 +201,9 @@ namespace CropCirclesUnpacker.Storages
         Sections.Add(section);
       }
 
+      Section emptySection = new Section();
+      Sections.Add(emptySection);
+
       return true;
     }
 
@@ -244,6 +235,26 @@ namespace CropCirclesUnpacker.Storages
       public bool IsNull()
       {
         return ((Type == SectionType.Unknown) && (Offset == 0) && (Size == 0));
+      }
+
+      public bool Write(BinaryWriter outputWriter)
+      {
+        if (IsNull())
+        {
+          outputWriter.Write((Int32)0);
+        }
+        else
+        {
+          string name = Type.ToString();
+          Debug.Assert(name.Length == 4, "Section type name MUST be 4 characters long!");
+
+          outputWriter.WriteFixedString(name, System.Text.Encoding.ASCII);
+        }
+
+        outputWriter.Write((Int32)Size);
+        outputWriter.Write((Int32)Offset);
+
+        return true;
       }
     }
   }
