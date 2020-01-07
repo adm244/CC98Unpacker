@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.Diagnostics;
+using System.IO;
 using CropCirclesUnpacker.Assets;
 
 namespace CropCirclesUnpacker.Storages.Resources
@@ -7,6 +9,7 @@ namespace CropCirclesUnpacker.Storages.Resources
   {
     private byte[] OFFI;
     private byte[] OFFS;
+    private Int32 Pitch;
 
     private ImageStorage()
       : this(string.Empty)
@@ -18,6 +21,7 @@ namespace CropCirclesUnpacker.Storages.Resources
     {
       OFFI = new byte[0];
       OFFS = new byte[0];
+      Pitch = 0;
     }
 
     public static Sprite ReadFromStream(BinaryReader inputReader, string name)
@@ -50,11 +54,28 @@ namespace CropCirclesUnpacker.Storages.Resources
       if (!base.ParseSections(inputReader))
         return false;
 
-      if (!ParseSectionType(inputReader, SectionType.OFFS))
-        return false;
+      switch (Type)
+      {
+        case ResourceType.Background:
+          {
+            if (!ParseSectionType(inputReader, SectionType.RBYT))
+              return false;
+          }
+          break;
+        case ResourceType.Sprite:
+          {
+            if (!ParseSectionType(inputReader, SectionType.OFFS))
+              return false;
 
-      if (!ParseSectionType(inputReader, SectionType.OFFI))
-        return false;
+            if (!ParseSectionType(inputReader, SectionType.OFFI))
+              return false;
+          }
+          break;
+
+        default:
+          Debug.Assert(false, "Resource type is not an image!");
+          return false;
+      }
 
       return true;
     }
@@ -70,6 +91,9 @@ namespace CropCirclesUnpacker.Storages.Resources
           break;
         case SectionType.OFFI:
           result = ParseOFFISection(inputReader, section);
+          break;
+        case SectionType.RBYT:
+          result = ParseRBYTSection(inputReader, section);
           break;
 
         default:
@@ -95,6 +119,14 @@ namespace CropCirclesUnpacker.Storages.Resources
     private bool ParseOFFISection(BinaryReader inputReader, Section section)
     {
       OFFI = inputReader.ReadBytes(section.Size);
+
+      return true;
+    }
+
+    private bool ParseRBYTSection(BinaryReader inputReader, Section section)
+    {
+      //NOTE(adm244): game's resource loader doesn't use this
+      Pitch = inputReader.ReadInt32();
 
       return true;
     }

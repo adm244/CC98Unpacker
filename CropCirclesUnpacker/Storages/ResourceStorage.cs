@@ -26,8 +26,6 @@ namespace CropCirclesUnpacker.Storages
 
     protected override bool Parse(BinaryReader inputReader)
     {
-      bool result = false;
-
       Console.WriteLine("Parsing {0}...", Path.GetFileName(LibraryPath));
 
       if (!base.Parse(inputReader))
@@ -36,12 +34,15 @@ namespace CropCirclesUnpacker.Storages
         return false;
       }
 
-      result = ParseSectionsTable(inputReader);
-      result = ParseSections(inputReader);
+      if (!ParseSectionsTable(inputReader))
+        return false;
+
+      if (!ParseSections(inputReader))
+        return false;
 
       Console.WriteLine("Done!");
 
-      return result;
+      return true;
     }
 
     protected virtual bool Write(BinaryWriter outputWriter, SectionType[] types)
@@ -88,7 +89,10 @@ namespace CropCirclesUnpacker.Storages
         else
         {
           if (!string.IsNullOrEmpty(name))
+          {
             Console.WriteLine("\t\tSkipping {0} section", name);
+            Debug.Assert(false, "Unknown section's encountered!");
+          }
         }
       }
       while (!currentSection.IsNull());
@@ -221,6 +225,7 @@ namespace CropCirclesUnpacker.Storages
       OFFI,
       ZPAL,
       LKUP,
+      RBYT,
     }
 
     protected struct Section
