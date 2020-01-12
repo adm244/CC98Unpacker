@@ -31,7 +31,8 @@ namespace CropCirclesUnpacker.Assets
       Unknown = 0,
       Font,
       Palette,
-      Sprite,
+      Texture,
+      Entity,
       Model,
     }
   }

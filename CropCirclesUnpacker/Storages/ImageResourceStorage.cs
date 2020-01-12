@@ -27,14 +27,14 @@ namespace CropCirclesUnpacker.Storages
       Type = ResourceType.Unknown;
     }
 
-    protected ImageResourceStorage(string filePath, Sprite sprite, ResourceType type)
+    protected ImageResourceStorage(string filePath, Texture texture, ResourceType type)
       : base(filePath)
     {
-      Width = sprite.Width;
-      Height = sprite.Height;
+      Width = texture.Width;
+      Height = texture.Height;
 
-      Pixels = new byte[sprite.Pixels.Length];
-      sprite.Pixels.CopyTo(Pixels, 0);
+      Pixels = new byte[texture.Pixels.Length];
+      texture.Pixels.CopyTo(Pixels, 0);
 
       Type = type;
     }
@@ -149,7 +149,7 @@ namespace CropCirclesUnpacker.Storages
     private bool ParseDATASection(BinaryReader inputReader, Section section)
     {
       //TODO(adm244): verify that padding is absent in compressed data
-      if (Type == ResourceType.Sprite)
+      if (Type == ResourceType.Entity)
       {
         Pixels = inputReader.ReadBytes(section.Size);
         Pixels = Decompress(Pixels);
@@ -173,7 +173,7 @@ namespace CropCirclesUnpacker.Storages
 
     private bool WriteDATASection(BinaryWriter outputWriter)
     {
-      if (Type == ResourceType.Sprite)
+      if (Type == ResourceType.Entity)
       {
         byte[] buffer = Compress(Pixels);
         outputWriter.Write((byte[])buffer);
@@ -237,8 +237,8 @@ namespace CropCirclesUnpacker.Storages
     protected enum ResourceType
     {
       Unknown = -1,
-      Background = 0,
-      Sprite = 1,
+      Texture = 0,
+      Entity = 1,
       Font = 2,
     }
   }

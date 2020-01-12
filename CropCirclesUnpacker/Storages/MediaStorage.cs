@@ -183,11 +183,12 @@ namespace CropCirclesUnpacker.Storages
 
               case ".zim":
                 {
-                  Sprite sprite = ImageStorage.ReadFromStream(resourceStream, AssetsInfo[i].Name);
-                  if (sprite == null)
-                    Debug.Assert(false, "Could not read a sprite data from a stream");
-                  else
-                    Assets.Add(sprite);
+                  //TODO(adm244): unify ImageResourceStorage loaders
+                  //Texture sprite = TextureStorage.LoadFromStream(resourceStream, AssetsInfo[i].Name);
+                  //if (sprite == null)
+                  //  Debug.Assert(false, "Could not read a sprite data from a stream");
+                  //else
+                  //  Assets.Add(sprite);
                 }
                 break;
               case ".zft":

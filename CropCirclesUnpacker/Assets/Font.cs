@@ -5,10 +5,10 @@ namespace CropCirclesUnpacker.Assets
 {
   public class Font : Asset
   {
-    public Sprite Texture;
+    public Texture Texture;
     public GlythOffset[] Offsets;
 
-    public Font(string name, Sprite texture, GlythOffset[] offsets)
+    public Font(string name, Texture texture, GlythOffset[] offsets)
       : base(name, AssetType.Font)
     {
       Texture = texture;

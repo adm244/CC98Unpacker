@@ -180,13 +180,13 @@ namespace CropCirclesUnpackerGUI
       Asset asset = (Asset)e.Node.Tag;
       switch (asset.Type)
       {
-        case Asset.AssetType.Sprite:
-          DisplaySprite((Sprite)asset);
+        case Asset.AssetType.Texture:
+          DisplaySprite((Texture)asset);
           break;
 
         case Asset.AssetType.Font:
           CropCirclesUnpacker.Assets.Font font = (CropCirclesUnpacker.Assets.Font)asset;
-          DisplaySprite((Sprite)(font.Texture));
+          DisplaySprite((Texture)(font.Texture));
           break;
 
         default:
@@ -212,7 +212,7 @@ namespace CropCirclesUnpackerGUI
       return (Palette)ctrlPaletteSelector.SelectedItem;
     }
 
-    private void DisplaySprite(Sprite sprite)
+    private void DisplaySprite(Texture sprite)
     {
       Palette palette = GetSelectedPalette();
       Image image = sprite.CreateBitmap(palette);
@@ -263,9 +263,9 @@ namespace CropCirclesUnpackerGUI
 
     private void ImportImage()
     {
-      Debug.Assert(PreviewObject is Sprite);
+      Debug.Assert(PreviewObject is Texture);
 
-      Sprite sprite = (Sprite)PreviewObject;
+      Texture sprite = (Texture)PreviewObject;
 
       ctrlOpenFile.Title = "Select image to import...";
       ctrlOpenFile.CheckFileExists = true;
@@ -308,11 +308,11 @@ namespace CropCirclesUnpackerGUI
 
     private void ExportImage()
     {
-      Debug.Assert(PreviewObject is Sprite);
+      Debug.Assert(PreviewObject is Texture);
       Debug.Assert(ctrlContentPanel.Controls.Count == 1);
       Debug.Assert(ctrlContentPanel.Controls[0] is PictureBox);
 
-      Sprite sprite = (Sprite)PreviewObject;
+      Texture sprite = (Texture)PreviewObject;
       Image image = ((PictureBox)ctrlContentPanel.Controls[0]).Image;
 
       ctrlSaveFile.Title = "Select export destination";
@@ -334,8 +334,8 @@ namespace CropCirclesUnpackerGUI
       {
         case PreviewTypes.Image:
           {
-            Debug.Assert(PreviewObject is Sprite);
-            DisplaySprite((Sprite)PreviewObject);
+            Debug.Assert(PreviewObject is Texture);
+            DisplaySprite((Texture)PreviewObject);
           }
           break;
 

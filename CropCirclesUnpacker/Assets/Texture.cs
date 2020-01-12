@@ -5,12 +5,12 @@ using CropCirclesUnpacker.Extensions;
 
 namespace CropCirclesUnpacker.Assets
 {
-  public class Sprite : Asset
+  public class Texture : Asset
   {
     private PixelFormat Format = PixelFormat.Format8bppIndexed;
 
-    public Sprite(string name, byte[] pixels, int width, int height)
-      : base(name, AssetType.Sprite)
+    public Texture(string name, byte[] pixels, int width, int height)
+      : base(name, AssetType.Texture)
     {
       Debug.Assert((width > 0) && (height > 0));
       Debug.Assert((width * height) == pixels.Length);
