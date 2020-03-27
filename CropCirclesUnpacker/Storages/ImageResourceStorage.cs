@@ -231,7 +231,60 @@ namespace CropCirclesUnpacker.Storages
 
     private byte[] Compress(byte[] buffer)
     {
-      throw new NotImplementedException();
+      MemoryStream inputStream = new MemoryStream(buffer);
+      BinaryReader inputReader = new BinaryReader(inputStream);
+
+      MemoryStream outputStream = new MemoryStream();
+      BinaryWriter outputWriter = new BinaryWriter(outputStream);
+
+      while (!inputReader.EOF())
+      {
+        long start = inputReader.BaseStream.Position;
+        long end = 0;
+        long distance = 0;
+
+        byte colour = inputReader.ReadByte();
+        if (colour == 0x0A) // skip
+        {
+          while (true)
+          {
+            end = inputReader.BaseStream.Position;
+            distance = (end - start);
+            if (distance == 255)
+              break;
+
+            colour = inputReader.ReadByte();
+            if (colour != 0x0A)
+              break;
+          }
+
+          inputReader.BaseStream.Position = end;
+
+          outputWriter.Write((byte)0xFF);
+          outputWriter.Write((byte)distance);
+        }
+        else // data
+        {
+          while (true)
+          {
+            end = inputReader.BaseStream.Position;
+            distance = (end - start);
+            if (distance == 255)
+              break;
+
+            colour = inputReader.ReadByte();
+            if (colour == 0x0A)
+              break;
+          }
+
+          inputReader.BaseStream.Position = end;
+
+          outputWriter.Write((byte)0xFE);
+          outputWriter.Write((byte)
+        }
+      }
+
+      return outputStream.ToArray();
     }
 
     protected enum ResourceType

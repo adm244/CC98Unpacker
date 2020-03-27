@@ -88,9 +88,9 @@ namespace CropCirclesUnpacker.Storages.Resources
     protected override bool Write(BinaryWriter outputWriter)
     {
       SectionType[] types = new SectionType[] {
-        SectionType.INFO,
         SectionType.DATA,
         SectionType.OFFS,
+        SectionType.INFO,
         SectionType.OFFI
       };
 
@@ -137,7 +137,23 @@ namespace CropCirclesUnpacker.Storages.Resources
 
     protected override bool WriteSection(BinaryWriter outputWriter, SectionType type)
     {
-      throw new NotImplementedException();
+      bool result = false;
+
+      switch (type)
+      {
+        case SectionType.OFFS:
+          result = WriteOFFSSection(outputWriter);
+          break;
+        case SectionType.OFFI:
+          result = WriteOFFISection(outputWriter);
+          break;
+
+        default:
+          result = base.WriteSection(outputWriter, type);
+          break;
+      }
+
+      return result;
     }
 
     private bool ParseOFFSSection(BinaryReader inputReader, Section section)
@@ -147,9 +163,23 @@ namespace CropCirclesUnpacker.Storages.Resources
       return true;
     }
 
+    private bool WriteOFFSSection(BinaryWriter outputWriter)
+    {
+      outputWriter.Write((byte[])OFFS);
+
+      return true;
+    }
+
     private bool ParseOFFISection(BinaryReader inputReader, Section section)
     {
       OFFI = inputReader.ReadBytes(section.Size);
+
+      return true;
+    }
+
+    private bool WriteOFFISection(BinaryWriter outputWriter)
+    {
+      outputWriter.Write((byte[])OFFI);
 
       return true;
     }
